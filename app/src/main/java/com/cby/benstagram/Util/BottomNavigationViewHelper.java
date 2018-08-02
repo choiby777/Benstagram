@@ -7,12 +7,12 @@ import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.cby.benstagram.HomeActivity;
-import com.cby.benstagram.LikesActivity;
-import com.cby.benstagram.ProfileActivity;
+import com.cby.benstagram.Home.HomeActivity;
+import com.cby.benstagram.Likes.LikesActivity;
+import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
-import com.cby.benstagram.SearchActivity;
-import com.cby.benstagram.ShareActivity;
+import com.cby.benstagram.Search.SearchActivity;
+import com.cby.benstagram.Share.ShareActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class BottomNavigationViewHelper {

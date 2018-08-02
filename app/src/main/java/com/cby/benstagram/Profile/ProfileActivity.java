@@ -1,4 +1,4 @@
-package com.cby.benstagram;
+package com.cby.benstagram.Profile;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 

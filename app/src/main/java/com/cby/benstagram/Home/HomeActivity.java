@@ -1,20 +1,21 @@
-package com.cby.benstagram;
+package com.cby.benstagram.Home;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class ShareActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
-    private static final String TAG = "ShareActivity";
-    private Context mContext  = ShareActivity.this;
-    private static final int ACTIVITY_NUM = 2;
+    private static final String TAG = "HomeActivity";
+    private Context mContext  = HomeActivity.this;
+    private static final int ACTIVITY_NUM = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

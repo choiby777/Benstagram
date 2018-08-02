@@ -1,4 +1,4 @@
-package com.cby.benstagram;
+package com.cby.benstagram.Share;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,14 +7,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class SearchActivity extends AppCompatActivity {
+public class ShareActivity extends AppCompatActivity {
 
-    private static final String TAG = "SearchActivity";
-    private Context mContext  = SearchActivity.this;
-    private static final int ACTIVITY_NUM = 1;
+    private static final String TAG = "ShareActivity";
+    private Context mContext  = ShareActivity.this;
+    private static final int ACTIVITY_NUM = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +40,4 @@ public class SearchActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
-
 }

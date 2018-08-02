@@ -1,4 +1,4 @@
-package com.cby.benstagram;
+package com.cby.benstagram.Search;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,14 +7,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class LikesActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
-    private static final String TAG = "LikesActivity";
-    private Context mContext  = LikesActivity.this;
-    private static final int ACTIVITY_NUM = 3;
+    private static final String TAG = "SearchActivity";
+    private Context mContext  = SearchActivity.this;
+    private static final int ACTIVITY_NUM = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
