@@ -31,27 +31,6 @@ public class HomeActivity extends AppCompatActivity {
         setupViewPager();
     }
 
-    private void setupToolbar(){
-        Toolbar toolbar = findViewById(R.id.profileToolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                Log.d(TAG, "onMenuItemClick: clicked menu item" + item);
-
-                switch (item.getItemId()){
-                    case R.id.profileMenu:
-                        Log.d(TAG, "onMenuItemClick: Navigating to Profile preference");
-                        break;
-                }
-
-
-                return false;
-            }
-        });
-    }
 
     /**
      * ViewPager에 3개의 Tab 추가(Camera, Home , Message)

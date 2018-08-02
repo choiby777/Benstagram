@@ -3,6 +3,7 @@ package com.cby.benstagram.Profile;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,11 +21,35 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_profile);
 
         Log.d(TAG, "onCreate: starting");
 
         setupBottomNavigationView();
+        setupToolbar();
+    }
+
+
+    private void setupToolbar(){
+        Toolbar toolbar = findViewById(R.id.profileToolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Log.d(TAG, "onMenuItemClick: clicked menu item" + item);
+
+                switch (item.getItemId()){
+                    case R.id.profileMenu:
+                        Log.d(TAG, "onMenuItemClick: Navigating to Profile preference");
+                        break;
+                }
+
+
+                return false;
+            }
+        });
     }
 
     /**
