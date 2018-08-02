@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,28 @@ public class HomeActivity extends AppCompatActivity {
 
         setupBottomNavigationView();
         setupViewPager();
+    }
+
+    private void setupToolbar(){
+        Toolbar toolbar = findViewById(R.id.profileToolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Log.d(TAG, "onMenuItemClick: clicked menu item" + item);
+
+                switch (item.getItemId()){
+                    case R.id.profileMenu:
+                        Log.d(TAG, "onMenuItemClick: Navigating to Profile preference");
+                        break;
+                }
+
+
+                return false;
+            }
+        });
     }
 
     /**
@@ -63,5 +86,11 @@ public class HomeActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu , menu);
+        return true;
     }
 }
