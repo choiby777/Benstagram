@@ -1,54 +1,31 @@
 package com.cby.benstagram.Profile;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.QuickContactBadge;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class ProfileActivity extends AppCompatActivity {
+public class AccountSettingActivity extends AppCompatActivity {
 
-    private static final String TAG = "ProfileActivity";
-    private Context mContext  = ProfileActivity.this;
+    private static final String TAG = "AccountSettingActivity";
+    private Context mContext  = AccountSettingActivity.this;
     private static final int ACTIVITY_NUM = 4;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_account_setting);
 
         Log.d(TAG, "onCreate: starting");
 
         setupBottomNavigationView();
-        setupToolbar();
-    }
-
-
-    private void setupToolbar(){
-        Toolbar toolbar = findViewById(R.id.profileToolbar);
-        setSupportActionBar(toolbar);
-
-        ImageView imageView = findViewById(R.id.profileMoreMenu);
-
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: Profile More Menu clicked");
-
-                Intent intent = new Intent(mContext , AccountSettingActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     /**
@@ -64,5 +41,4 @@ public class ProfileActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
-
 }
