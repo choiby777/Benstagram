@@ -15,7 +15,7 @@ import com.cby.benstagram.R;
 import com.cby.benstagram.Util.UniversalImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class EditProfileFragment extends Fragment {
+public class EditProfileFragment extends Fragment{
     private static final String TAG = "EditProfileFragment";
     private ImageView mProfileImage;
 
@@ -30,6 +30,14 @@ public class EditProfileFragment extends Fragment {
         initImageLoader();
 
         setProfileImage();
+
+        ImageView backArrowImg = view.findViewById(R.id.backArrow);
+        backArrowImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
 
         return view;
     }
