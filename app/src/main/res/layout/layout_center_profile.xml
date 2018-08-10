@@ -34,16 +34,17 @@
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="25"
+                    android:layout_weight="35"
                     android:layout_height="match_parent"
                     >
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/profile_image"
-                        android:layout_margin="10dp"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
                         android:src="@drawable/dog"
                         app:civ_border_width="1dp"
                         app:civ_border_color="#FF000000"/>
@@ -54,7 +55,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_width="0dp"
-                    android:layout_weight="75"
+                    android:layout_weight="65"
                     android:layout_height="wrap_content"
                     >
 

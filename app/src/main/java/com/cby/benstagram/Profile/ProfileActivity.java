@@ -15,6 +15,7 @@ import android.widget.QuickContactBadge;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
+import com.cby.benstagram.Util.UniversalImageLoader;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -23,6 +24,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Context mContext  = ProfileActivity.this;
     private static final int ACTIVITY_NUM = 4;
     private ProgressBar mProgressBar;
+    private ImageView mProfileImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +33,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: starting");
 
-        mProgressBar = findViewById(R.id.profileProgressBar);
-        mProgressBar.setVisibility(View.GONE);
-
         setupBottomNavigationView();
         setupToolbar();
+        setupActivityWidgets();
+        setProfileImage();
+
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    private void setupActivityWidgets() {
+        mProgressBar = findViewById(R.id.profileProgressBar);
+        mProfileImageView = findViewById(R.id.profile_image);
     }
 
 
@@ -54,6 +62,14 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void setProfileImage() {
+        Log.d(TAG, "setProfileImage: setting Profile Image");
+
+        String imgURL = "tr2.cbsistatic.com/hub/i/r/2017/01/31/7e355c52-c68f-4389-825f-392f2dd2ac19/resize/770x/d19d6c021f770122da649e2a77bd1404/androiddatahero.jpg";
+
+        UniversalImageLoader.setImage(imgURL , mProfileImageView , mProgressBar, "https://");
     }
 
     /**
