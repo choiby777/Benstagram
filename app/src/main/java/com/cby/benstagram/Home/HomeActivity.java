@@ -12,7 +12,9 @@ import android.view.MenuItem;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
+import com.cby.benstagram.Util.UniversalImageLoader;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -27,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: starting");
 
+        initImageLoader();
         setupBottomNavigationView();
         setupViewPager();
     }
@@ -66,4 +69,10 @@ public class HomeActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+
+    private void initImageLoader() {
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
 }

@@ -27,8 +27,6 @@ public class EditProfileFragment extends Fragment{
 
         mProfileImage = view.findViewById(R.id.profile_image);
 
-        initImageLoader();
-
         setProfileImage();
 
         ImageView backArrowImg = view.findViewById(R.id.backArrow);
@@ -48,10 +46,5 @@ public class EditProfileFragment extends Fragment{
         String imgURL = "tr2.cbsistatic.com/hub/i/r/2017/01/31/7e355c52-c68f-4389-825f-392f2dd2ac19/resize/770x/d19d6c021f770122da649e2a77bd1404/androiddatahero.jpg";
 
         UniversalImageLoader.setImage(imgURL , mProfileImage , null, "https://");
-    }
-
-    private void initImageLoader() {
-        UniversalImageLoader universalImageLoader = new UniversalImageLoader(getActivity());
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 }
