@@ -9,14 +9,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
+import com.cby.benstagram.Util.GridImageAdapter;
 import com.cby.benstagram.Util.UniversalImageLoader;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -37,8 +41,40 @@ public class ProfileActivity extends AppCompatActivity {
         setupToolbar();
         setupActivityWidgets();
         setProfileImage();
+        setupGridImageTestDatas();
 
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    private void setupGridImageTestDatas(){
+
+        ArrayList<String> imgURLs = new ArrayList<>();
+
+        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
+        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
+        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
+        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
+        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
+        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
+        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+
+        setupGridImage(imgURLs);
+    }
+
+    private void setupGridImage(ArrayList<String> imgURLs) {
+
+        GridView gridView = findViewById(R.id.gridImages);
+
+        GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_imageview, "" , imgURLs);
+
+        gridView.setAdapter(adapter);
     }
 
     private void setupActivityWidgets() {
