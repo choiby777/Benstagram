@@ -19,17 +19,25 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "RegisterActivity";
 
     private Context mContext = RegisterActivity.this;
-    private FirebaseAuth mAuth;
     private EditText mTxtUserEmail , mTxtFullName, mTxtPassword;
     private ProgressBar mProgressBar;
     private Button mRegisterButton;
 
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
 
     @Override
@@ -37,15 +45,57 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance();
         mFirebaseHelper = new FirebaseHelper(mContext);
 
+        setupFirebaseAuth();
         initWidgets();
         setupWidgetEvents();
 
         mProgressBar.setVisibility(View.GONE);
 
         Log.d(TAG, "onCreate: Register Activity Created");
+    }
+
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: ");
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDbReference = mFirebaseDatabase.getReference();
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+                if (firebaseUser != null){
+                    Log.d(TAG, "onAuthStateChanged: signed_in : " + firebaseUser.getUid());
+
+                    mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        String username = mTxtFullName.getText().toString();
+                        String append;
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            if (mFirebaseHelper.checkIfUsernameExists(username , dataSnapshot)){
+                                append = mDbReference.push().getKey().substring(3,10);
+                                Log.d(TAG, "onDataChange: append : " + append);
+                            }
+
+                            username = username + append;
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+        };
+
     }
 
     private void setupWidgetEvents() {
