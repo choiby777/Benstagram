@@ -23,6 +23,8 @@
         <activity android:name=".Profile.AccountSettingActivity"/>
         <activity android:name=".Search.SearchActivity"/>
         <activity android:name=".Share.ShareActivity"/>
+        <activity android:name=".Login.LoginActivity"/>
+        <activity android:name=".Login.RegisterActivity"/>
     </application>
 
 </manifest>
