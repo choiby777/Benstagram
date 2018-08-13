@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //progress_Login
         setupClickEvents();
 
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE);
 
         Log.d(TAG, "onCreate: Login Activity Created");
     }
@@ -72,10 +72,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (viewId == R.id.btn_login){
 
-            mProgressBar.setVisibility(View.VISIBLE);
-
             String email = mInputEmail.getText().toString();
             String password = mInputPass.getText().toString();
+
+            if (isStringNull(email) || isStringNull(password)){
+                Toast.makeText(mContext, "Enter email and password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            mProgressBar.setVisibility(View.VISIBLE);
 
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -89,8 +94,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.d(TAG, "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
 
-                                //updateUI(user);
-
                                 finish();
 
                             } else {
@@ -98,7 +101,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 Toast.makeText(mContext, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
-                                //updateUI(null);
                             }
                         }
                     });
@@ -108,5 +110,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(mContext , RegisterActivity.class);
             startActivity(intent);
         }
+    }
+
+    private boolean isStringNull(String string) {
+        return string.equals("");         
     }
 }

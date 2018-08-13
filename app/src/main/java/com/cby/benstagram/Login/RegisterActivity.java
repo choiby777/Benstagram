@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +26,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private static final String TAG = "RegisterActivity";
     private Context mContext = RegisterActivity.this;
     private FirebaseAuth mAuth;
-    private EditText mTxtUserEmal;
-    private EditText mTxtFullName;
-    private EditText mTxtPassword;
+    private EditText mTxtUserEmail , mTxtFullName, mTxtPassword;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,10 +36,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         mAuth = FirebaseAuth.getInstance();
 
-        mTxtUserEmal = findViewById(R.id.input_email);
+        mTxtUserEmail = findViewById(R.id.input_email);
         mTxtFullName = findViewById(R.id.input_fullName);
         mTxtPassword = findViewById(R.id.input_password);
+        mProgressBar = findViewById(R.id.progress_register);
 
+        mProgressBar.setVisibility(View.GONE);
 
         setupClickEvents();
 
@@ -68,8 +70,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         if (viewId == R.id.btn_register) {
 
-            String email = mTxtUserEmal.getText().toString();
+            String email = mTxtUserEmail.getText().toString();
             String password = mTxtPassword.getText().toString();
+
+            mProgressBar.setVisibility(View.VISIBLE);
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -93,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         }
                     });
 
-
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 }
