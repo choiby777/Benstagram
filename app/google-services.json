@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "918970122433",
+    "firebase_url": "https://benstagram-ab6cf.firebaseio.com",
+    "project_id": "benstagram-ab6cf",
+    "storage_bucket": "benstagram-ab6cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918970122433:android:fe88657f19ba8145",
+        "android_client_info": {
+          "package_name": "com.cby.benstagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918970122433-oa9ev9u9ua754fmlnp91fgurbdrcit1s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cby.benstagram",
+            "certificate_hash": "21d555278b40a723185bf7ec97b807ece4c09798"
+          }
+        },
+        {
+          "client_id": "918970122433-8gmmof3vttqvec76l9jg2p70b080pqn4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8BSMTFNFb3O273OIEOzS-urLYRj1ZhKM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918970122433-8gmmof3vttqvec76l9jg2p70b080pqn4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
