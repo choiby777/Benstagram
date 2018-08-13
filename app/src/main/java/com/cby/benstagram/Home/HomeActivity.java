@@ -37,13 +37,10 @@ public class HomeActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: starting");
 
-        //setupFirebaseAuth();
+        setupFirebaseAuth();
         initImageLoader();
         setupBottomNavigationView();
         setupViewPager();
-
-        Intent intent = new Intent(mContext , LoginActivity.class);
-        startActivity(intent);
     }
 
     private void checkCurrentUser(FirebaseUser user){
@@ -59,12 +56,15 @@ public class HomeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (mAuth.getCurrentUser() != null){
+            mAuth.signOut();
+        }
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                checkCurrentUser(user);
+                FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
                     // User is signed in
@@ -82,14 +82,16 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        //mAuth.addAuthStateListener(mAuthListener);
+        mAuth.addAuthStateListener(mAuthListener);
+        checkCurrentUser(mAuth.getCurrentUser());
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
         if (mAuthListener != null) {
-            //mAuth.removeAuthStateListener(mAuthListener);
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 

@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cby.benstagram.Home.HomeActivity;
 import com.cby.benstagram.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,13 +25,14 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "LoginActivity";
+
     private Context mContext  = LoginActivity.this;
-    private AppCompatButton mLoginButton;
-    private TextView mSignUPText;
+    private AppCompatButton mBtnLogin;
+    private TextView mTxtSignUp;
+    private EditText mInputEmail, mInputPass;
     private ProgressBar mProgressBar;
+
     private FirebaseAuth mAuth;
-    private EditText mInputEmail;
-    private EditText mInputPass;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,31 +41,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mAuth = FirebaseAuth.getInstance();
 
-        mInputEmail = findViewById(R.id.input_email);
-        mInputPass = findViewById(R.id.input_password);
-
-        //progress_Login
-        setupClickEvents();
+        setupActivityWidgets();
+        setupWidgetEvents();
 
         mProgressBar.setVisibility(View.GONE);
+
+        if (mAuth.getCurrentUser() != null){
+            Intent intent = new Intent(mContext , HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         Log.d(TAG, "onCreate: Login Activity Created");
     }
 
-    private void setupClickEvents() {
-        if (mLoginButton == null){
-            mLoginButton = findViewById(R.id.btn_login);
-            mLoginButton.setOnClickListener(this);
-        }
+    private void setupActivityWidgets() {
+        mProgressBar = findViewById(R.id.progress_Login);
+        mBtnLogin = findViewById(R.id.btn_login);
+        mTxtSignUp = findViewById(R.id.txt_sign_up);
+        mInputEmail = findViewById(R.id.input_email);
+        mInputPass = findViewById(R.id.input_password);
+    }
 
-        if (mSignUPText == null) {
-            mSignUPText = findViewById(R.id.txt_sign_up);
-            mSignUPText.setOnClickListener(this);
-        }
-
-        if (mProgressBar == null){
-            mProgressBar = findViewById(R.id.progress_Login);
-        }
+    private void setupWidgetEvents() {
+        if (mBtnLogin != null) mBtnLogin.setOnClickListener(this);
+        if (mTxtSignUp != null) mTxtSignUp.setOnClickListener(this);
     }
 
     @Override
