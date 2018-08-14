@@ -72,7 +72,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     Log.d(TAG, "onAuthStateChanged: signed_in : " + firebaseUser.getUid());
 
                     mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
                         String username = mTxtFullName.getText().toString();
+                        String email = mTxtUserEmail.getText().toString();
                         String append;
 
                         @Override
@@ -84,10 +86,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             }
 
                             username = username + append;
+
+                            mFirebaseHelper.addNewUser(email , username , "Test User", "https://www.naver.com/", "none");
+
+                            mProgressBar.setVisibility(View.GONE);
+
+                            finish();
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
+
+                            Log.e(TAG, "onCancelled: databaseError : " + databaseError);
+
+                            mProgressBar.setVisibility(View.GONE);
+
+                            Toast.makeText(mContext, "Database Error",
+                                    Toast.LENGTH_LONG).show();
 
                         }
                     });
@@ -96,6 +111,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         };
 
+        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     private void setupWidgetEvents() {
@@ -115,9 +131,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onStart();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
-
-        //mAuth.createUserWithEmailAndPassword()
     }
 
     @Override
@@ -138,31 +151,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             mProgressBar.setVisibility(View.VISIBLE);
 
             mFirebaseHelper.registerNewEmail(email, userName, password);
-
-//            mAuth.createUserWithEmailAndPassword(email, password)
-//                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                            if (task.isSuccessful()) {
-//                                // Sign in success, update UI with the signed-in user's information
-//                                Log.d(TAG, "createUserWithEmail:success");
-//                                FirebaseUser user = mAuth.getCurrentUser();
-//                                //updateUI(user);
-//
-//                                finish();
-//
-//                            } else {
-//                                // If sign in fails, display a message to the user.
-//                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-//                                Toast.makeText(mContext, "Authentication failed.",
-//                                        Toast.LENGTH_SHORT).show();
-//                                //updateUI(null);
-//                            }
-//                        }
-//                    });
-
-            mProgressBar.setVisibility(View.GONE);
-            finish();
         }
     }
 
