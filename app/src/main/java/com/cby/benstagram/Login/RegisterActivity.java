@@ -25,7 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
+public class RegisterActivity extends AppCompatActivity
+        implements View.OnClickListener , FirebaseAuth.AuthStateListener{
 
     private static final String TAG = "RegisterActivity";
 
@@ -35,7 +36,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button mRegisterButton;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
@@ -60,58 +60,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         Log.d(TAG, "setupFirebaseAuth: ");
 
         mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(this);
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDbReference = mFirebaseDatabase.getReference();
-
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-                if (firebaseUser != null){
-                    Log.d(TAG, "onAuthStateChanged: signed_in : " + firebaseUser.getUid());
-
-                    mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
-
-                        String username = mTxtFullName.getText().toString();
-                        String email = mTxtUserEmail.getText().toString();
-                        String append;
-
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-
-                            if (mFirebaseHelper.checkIfUsernameExists(username , dataSnapshot)){
-                                append = mDbReference.push().getKey().substring(3,10);
-                                Log.d(TAG, "onDataChange: append : " + append);
-                            }
-
-                            username = username + append;
-
-                            mFirebaseHelper.addNewUser(email , username , "Test User", "https://www.naver.com/", "none");
-
-                            mProgressBar.setVisibility(View.GONE);
-
-                            finish();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                            Log.e(TAG, "onCancelled: databaseError : " + databaseError);
-
-                            mProgressBar.setVisibility(View.GONE);
-
-                            Toast.makeText(mContext, "Database Error",
-                                    Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-                }
-
-            }
-        };
-
-        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     private void setupWidgetEvents() {
@@ -130,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -156,5 +108,49 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private boolean isStringNull(String string) {
         return string.equals("");
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        if (firebaseUser != null){
+            Log.d(TAG, "onAuthStateChanged: signed_in : " + firebaseUser.getUid());
+
+            mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                String username = mTxtFullName.getText().toString();
+                String email = mTxtUserEmail.getText().toString();
+                String append;
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if (mFirebaseHelper.checkIfUsernameExists(username , dataSnapshot)){
+                        append = mDbReference.push().getKey().substring(3,10);
+                        Log.d(TAG, "onDataChange: append : " + append);
+                    }
+
+                    username = username + append;
+
+                    mFirebaseHelper.addNewUser(email , username , "Test User", "https://www.naver.com/", "none");
+
+                    mProgressBar.setVisibility(View.GONE);
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                    Log.e(TAG, "onCancelled: databaseError : " + databaseError);
+
+                    mProgressBar.setVisibility(View.GONE);
+
+                    Toast.makeText(mContext, "Database Error",
+                            Toast.LENGTH_LONG).show();
+
+                }
+            });
+        }
     }
 }
