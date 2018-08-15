@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         if (mAuth.getCurrentUser() != null){
-            mAuth.signOut();
+            //mAuth.signOut();
         }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {

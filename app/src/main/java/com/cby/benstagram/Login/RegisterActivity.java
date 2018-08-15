@@ -135,8 +135,8 @@ public class RegisterActivity extends AppCompatActivity
 
                     mFirebaseHelper.addNewUser(email , username , "Test User", "https://www.naver.com/", "none");
 
-                    mProgressBar.setVisibility(View.GONE);
-                    finish();
+                    mAuth.signOut();
+
                 }
 
                 @Override
@@ -144,13 +144,17 @@ public class RegisterActivity extends AppCompatActivity
 
                     Log.e(TAG, "onCancelled: databaseError : " + databaseError);
 
-                    mProgressBar.setVisibility(View.GONE);
-
                     Toast.makeText(mContext, "Database Error",
                             Toast.LENGTH_LONG).show();
-
                 }
             });
+
+            mProgressBar.setVisibility(View.GONE);
+
+            finish();
+
+        }else{
+            Log.d(TAG, "onAuthStateChanged: signed_out");
         }
     }
 }

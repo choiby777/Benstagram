@@ -89,14 +89,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
+                            Log.d(TAG, "onComplete: signIn Result : " + task.isSuccessful());
+
                             mProgressBar.setVisibility(View.GONE);
 
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
+
                                 FirebaseUser user = mAuth.getCurrentUser();
 
-                                finish();
+                                try {
+                                    if (user.isEmailVerified()){
+                                        Log.d(TAG, "onComplete: success email verification");
+
+                                        Intent intent = new Intent(mContext , HomeActivity.class);
+                                        startActivity(intent);
+
+                                    }else{
+                                        Log.e(TAG, "onComplete: fail email verification");
+
+                                        Toast.makeText(
+                                                mContext ,
+                                                "Email is not verified. Check you emal." ,
+                                                Toast.LENGTH_SHORT).show();
+
+                                        mAuth.signOut();
+                                    }
+                                    
+                                }catch (NullPointerException e){
+                                    Log.e(TAG, "onComplete: NullPointerException : " + e.getMessage());
+                                }
 
                             } else {
                                 // If sign in fails, display a message to the user.
