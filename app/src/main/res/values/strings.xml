@@ -2,6 +2,8 @@
     <string name="app_name">Benstagram</string>
     <string name="edit_profile_fragment">Edit Profile</string>
     <string name="sign_out_fragment">Sign Out</string>
+    <string name="btn_sign_out">SIGN OUT</string>
+    <string name="txt_sign_out_message">Are you sure you want to sign out?</string>
 
     <!--Firebase messages-->
     <string name="auth_failed">Failed to Authenticate</string>
