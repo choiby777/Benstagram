@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
+import com.cby.benstagram.models.UserSettings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -114,12 +115,106 @@ public class FirebaseHelper {
                 0,
                 0,
                 profile_photo,
-                username,
+                StringManipulation.condenseUsername(username),
                 website
         );
 
         mDatabaseReference.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(mUserId)
                 .setValue(setting);
+    }
+    
+    public UserSettings getUserSettings(DataSnapshot dataSnapshot){
+        Log.d(TAG, "getUserAccountSettings: retrieving user account setting form database");
+
+        User user = new User();
+        UserAccountSettings setting = new UserAccountSettings();
+
+        for (DataSnapshot ds : dataSnapshot.getChildren()){
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))){
+
+                Log.d(TAG, "getUserSettings: dataSnapshot : " + ds);
+
+                try {
+                    setting.setDescription(
+                            ds.child(mUserId)
+                                .getValue(UserAccountSettings.class)
+                                .getDescription()
+                    );
+                    setting.setDisplay_name(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDisplay_name()
+                    );
+                    setting.setFollowers(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowers()
+                    );
+                    setting.setFollowing(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowing()
+                    );
+                    setting.setPosts(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getPosts()
+                    );
+                    setting.setProfile_photo(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getProfile_photo()
+                    );
+                    setting.setUsername(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getUsername()
+                    );
+                    setting.setWebsite(
+                            ds.child(mUserId)
+                                    .getValue(UserAccountSettings.class)
+                                    .getWebsite()
+                    );
+
+                    Log.d(TAG, "getUserSettings: retrieved setting :" + setting.toString());
+
+                }catch (NullPointerException e){
+                    Log.e(TAG, "getUserSettings: NullPointerException ", e);
+                }
+            }
+
+
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
+                Log.d(TAG, "getUserSettings: dataSnapshot : " + ds);
+
+                try {
+                    user.setUser_id(ds.child(mUserId)
+                            .getValue(User.class)
+                            .getUser_id()
+                    );
+                    user.setPhone_number(ds.child(mUserId)
+                            .getValue(User.class)
+                            .getPhone_number()
+                    );
+                    user.setEmail(ds.child(mUserId)
+                            .getValue(User.class)
+                            .getEmail()
+                    );
+                    user.setUsername(ds.child(mUserId)
+                            .getValue(User.class)
+                            .getUsername()
+                    );
+
+                    Log.d(TAG, "getUserSettings: retrieved user :" + user.toString());
+                }catch (NullPointerException e){
+                    Log.e(TAG, "getUserSettings: ", e);
+                }
+            }
+        }
+
+        UserSettings userSettings = new UserSettings(user , setting);
+
+        return userSettings;
     }
 }
