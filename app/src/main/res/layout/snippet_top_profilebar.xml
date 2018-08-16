@@ -23,7 +23,7 @@
                     android:textSize="20sp"
                     android:layout_marginStart="15dp"
                     android:textColor="@color/black"
-                    android:id="@+id/profileName"
+                    android:id="@+id/txt_user_name"
                     />
 
                 <ImageView
