@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Benstagram</string>
+
+    <!--Fragment names-->
     <string name="edit_profile_fragment">Edit Profile</string>
     <string name="sign_out_fragment">Sign Out</string>
+    <string name="profile_fragment">Profile</string>
+
     <string name="btn_sign_out">SIGN OUT</string>
     <string name="txt_sign_out_message">Are you sure you want to sign out?</string>
 
