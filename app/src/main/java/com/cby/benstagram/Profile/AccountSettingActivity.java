@@ -1,6 +1,7 @@
 package com.cby.benstagram.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -29,7 +30,7 @@ public class AccountSettingActivity extends AppCompatActivity {
     private Context mContext;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
-    private SectionStatePagerAdapter mSectionStatePagerAdapter;
+    private SectionStatePagerAdapter mPagerAdapter;
 
 
     @Override
@@ -45,6 +46,7 @@ public class AccountSettingActivity extends AppCompatActivity {
         setupBottomNavigationView();
         setupSettingsList();
         setupFragments();
+        getIncomingIntent();
 
         ImageView backArrow = findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
@@ -57,10 +59,20 @@ public class AccountSettingActivity extends AppCompatActivity {
         });
     }
 
+    private void getIncomingIntent(){
+        Intent intent  = getIntent();
+
+        if (intent.hasExtra(getString(R.string.calling_activity))){
+            Log.d(TAG, "getIncomingIntent: received incoming intent from " + getString(R.string.calling_activity));
+            setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
+        }
+
+    }
+
     private void setupFragments() {
-        mSectionStatePagerAdapter = new SectionStatePagerAdapter(getSupportFragmentManager());
-        mSectionStatePagerAdapter.addFragment(new EditProfileFragment() , getString(R.string.edit_profile_fragment)); // fragment 0
-        mSectionStatePagerAdapter.addFragment(new SignOutFragment() , getString(R.string.sign_out_fragment)); // fragment 1
+        mPagerAdapter = new SectionStatePagerAdapter(getSupportFragmentManager());
+        mPagerAdapter.addFragment(new EditProfileFragment() , getString(R.string.edit_profile_fragment)); // fragment 0
+        mPagerAdapter.addFragment(new SignOutFragment() , getString(R.string.sign_out_fragment)); // fragment 1
     }
 
     private void  setupSettingsList(){
@@ -103,7 +115,7 @@ public class AccountSettingActivity extends AppCompatActivity {
     public void setViewPager(int fragmentNumber) {
 
         mRelativeLayout.setVisibility(View.GONE);
-        mViewPager.setAdapter(mSectionStatePagerAdapter);
+        mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(fragmentNumber);
     }
 }
