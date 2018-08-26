@@ -14,12 +14,14 @@ import android.widget.Toast;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
+import com.cby.benstagram.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity
@@ -28,7 +30,8 @@ public class RegisterActivity extends AppCompatActivity
     private static final String TAG = "RegisterActivity";
 
     private Context mContext = RegisterActivity.this;
-    private EditText mTxtUserEmail , mTxtFullName, mTxtPassword;
+    private EditText mEditTextEmail, mEditTextUserName, mEditTextPassword;
+    private String email, userName, password;
     private ProgressBar mProgressBar;
     private Button mRegisterButton;
 
@@ -36,6 +39,8 @@ public class RegisterActivity extends AppCompatActivity
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
+
+    private String append = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,9 +73,9 @@ public class RegisterActivity extends AppCompatActivity
     }
 
     private void initWidgets() {
-        mTxtUserEmail = findViewById(R.id.input_email);
-        mTxtFullName = findViewById(R.id.input_fullName);
-        mTxtPassword = findViewById(R.id.input_password);
+        mEditTextEmail = findViewById(R.id.input_email);
+        mEditTextUserName = findViewById(R.id.input_fullName);
+        mEditTextPassword = findViewById(R.id.input_password);
         mProgressBar = findViewById(R.id.progress_register);
         mRegisterButton = findViewById(R.id.btn_register);
     }
@@ -88,9 +93,9 @@ public class RegisterActivity extends AppCompatActivity
 
         if (viewId == R.id.btn_register) {
 
-            String email = mTxtUserEmail.getText().toString();
-            String userName = mTxtFullName.getText().toString();
-            String password = mTxtPassword.getText().toString();
+            email = mEditTextEmail.getText().toString();
+            userName = mEditTextUserName.getText().toString();
+            password = mEditTextPassword.getText().toString();
 
             if (isStringNull(email) || isStringNull(password) || isStringNull(userName)){
                 Toast.makeText(mContext, "All fields must be filled out", Toast.LENGTH_SHORT).show();
@@ -116,24 +121,9 @@ public class RegisterActivity extends AppCompatActivity
 
             mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                String username = mTxtFullName.getText().toString();
-                String email = mTxtUserEmail.getText().toString();
-                String append;
-
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (mFirebaseHelper.checkIfUsernameExists(username , dataSnapshot)){
-                        append = mDbReference.push().getKey().substring(3,10);
-                        Log.d(TAG, "onDataChange: append : " + append);
-                    }
-
-                    username = username + append;
-
-                    mFirebaseHelper.addNewUser(email , username , "Test User", "https://www.naver.com/", "none");
-
-                    mAuth.signOut();
-
+                    checkIfUsernameExists(userName);
                 }
 
                 @Override
@@ -153,5 +143,45 @@ public class RegisterActivity extends AppCompatActivity
         }else{
             Log.d(TAG, "onAuthStateChanged: signed_out");
         }
+    }
+
+
+    private void checkIfUsernameExists(final String userName) {
+        Log.d(TAG, "checkIfUsernameExists: userName : " + userName);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference
+                .child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_username))
+                .equalTo(userName);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    if (singleSnapshot.exists()){
+                        Log.d(TAG, "onDataChange: found a match : " + singleSnapshot.getValue(User.class).getUsername());
+                        append = mDbReference.push().getKey().substring(3,10);
+                    }
+                }
+
+                String mUserName = "";
+                mUserName = userName + append;
+
+                mFirebaseHelper.addNewUser(email , mUserName , "Test User", "https://www.naver.com/", "none");
+
+                mAuth.signOut();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

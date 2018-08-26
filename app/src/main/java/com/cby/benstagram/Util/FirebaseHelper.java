@@ -60,7 +60,6 @@ public class FirebaseHelper {
         return false;
     }
 
-
     public void registerNewEmail(final String email , String userName, String password, final ProgressBar progressBar){
 
         mAuth.createUserWithEmailAndPassword(email, password)
