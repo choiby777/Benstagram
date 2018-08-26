@@ -217,4 +217,18 @@ public class FirebaseHelper {
 
         return userSettings;
     }
+
+    public void updateUsername(String userName) {
+        Log.d(TAG, "updateUsername: new User Name : " + userName);
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_users))
+                .child(mUserId)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(userName);
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(mUserId)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(userName);
+    }
 }

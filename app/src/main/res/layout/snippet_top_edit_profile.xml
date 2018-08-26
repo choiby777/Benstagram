@@ -45,7 +45,7 @@
                     android:layout_marginEnd="20dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:id="@+id/checked"
+                    android:id="@+id/image_checked"
                     android:src="@drawable/ic_checked"
                     />
 

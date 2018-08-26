@@ -1,5 +1,6 @@
 package com.cby.benstagram.Profile;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.print.PrinterId;
 import android.support.annotation.NonNull;
@@ -12,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
+import com.cby.benstagram.Util.StringManipulation;
 import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
@@ -24,21 +27,23 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class EditProfileFragment extends Fragment
-        implements FirebaseAuth.AuthStateListener{
+        implements FirebaseAuth.AuthStateListener, View.OnClickListener {
     private static final String TAG = "EditProfileFragment";
 
     private ImageView mProfileImage;
     private EditText mEditUserName , mEditDisplayName, mEditWebsite,
             mEditDescription, mEditEmail, mEditPhoneNumber;
-
+    private String mUserId;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
+    private UserSettings mUserSettings;
 
     @Nullable
     @Override
@@ -55,15 +60,13 @@ public class EditProfileFragment extends Fragment
         mEditEmail = view.findViewById(R.id.editText_email);
         mEditPhoneNumber = view.findViewById(R.id.editText_phoneNumber);
 
-        setProfileImage();
+        ImageView imageChecked = view.findViewById(R.id.image_checked);
+        imageChecked.setOnClickListener(this);
 
         ImageView backArrowImg = view.findViewById(R.id.backArrow);
-        backArrowImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().finish();
-            }
-        });
+        backArrowImg.setOnClickListener(this);
+
+        setProfileImage();
 
         setupFirebaseAuth();
 
@@ -76,6 +79,7 @@ public class EditProfileFragment extends Fragment
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(this);
 
+        mUserId = mAuth.getCurrentUser().getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDbReference = mFirebaseDatabase.getReference();
         mFirebaseHelper = new FirebaseHelper(getActivity());
@@ -96,8 +100,70 @@ public class EditProfileFragment extends Fragment
         });
     }
 
+    private void saveProfileSettings(){
+        final String displayName = mEditDisplayName.getText().toString();
+        final String userName = mEditUserName.getText().toString();
+        final String website = mEditWebsite.getText().toString();
+        final String description = mEditDescription.getText().toString();
+        final String email = mEditEmail.getText().toString();
+        final String phoneNumber = mEditPhoneNumber.getText().toString();
+
+        mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!mUserSettings.getUser().getUsername().equals(userName)){
+                    checkIfUsernameExists(userName);
+                }else{
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void checkIfUsernameExists(final String userName) {
+        Log.d(TAG, "checkIfUsernameExists: userName : " + userName);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference
+                .child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_username))
+                .equalTo(userName);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!dataSnapshot.exists()){
+                    mFirebaseHelper.updateUsername(userName);
+                    Toast.makeText(getActivity(), "saved username.", Toast.LENGTH_SHORT).show();
+                }
+
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    if (singleSnapshot.exists()){
+                        Log.d(TAG, "onDataChange: found a match : " + singleSnapshot.getValue(User.class).getUsername());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     private void setProfileWidgets(UserSettings userSettings){
 
+        mUserSettings = userSettings;
         User user = userSettings.getUser();
         UserAccountSettings accountSettings = userSettings.getSetting();
 
@@ -124,5 +190,18 @@ public class EditProfileFragment extends Fragment
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        int viewId = view.getId();
+
+        if (viewId == R.id.image_checked){
+
+            saveProfileSettings();
+
+        }else if (viewId == R.id.backArrow){
+            getActivity().finish();
+        }
     }
 }
