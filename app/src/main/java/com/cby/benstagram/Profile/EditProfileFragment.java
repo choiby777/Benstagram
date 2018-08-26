@@ -114,8 +114,14 @@ public class EditProfileFragment extends Fragment
 
                 if (!mUserSettings.getUser().getUsername().equals(userName)){
                     checkIfUsernameExists(userName);
-                }else{
+                }
 
+                // case 2 : email이 변경된 경우
+                if (!mUserSettings.getUser().getEmail().equals(email)) {
+
+                    // step 1 : 새로운 이메일과 비밀번호 사용자 확인
+                    // step 2 : 해당 email이 이미 등록되 있는지 체크
+                    // step 3 : auth와 database에 새로운 email 로 업데이트
                 }
             }
 
