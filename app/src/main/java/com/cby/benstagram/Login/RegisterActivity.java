@@ -14,9 +14,6 @@ import android.widget.Toast;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -102,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity
 
             mProgressBar.setVisibility(View.VISIBLE);
 
-            mFirebaseHelper.registerNewEmail(email, userName, password);
+            mFirebaseHelper.registerNewEmail(email, userName, password, mProgressBar);
         }
     }
 
@@ -124,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity
                 String append;
 
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (mFirebaseHelper.checkIfUsernameExists(username , dataSnapshot)){
                         append = mDbReference.push().getKey().substring(3,10);
@@ -140,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     Log.e(TAG, "onCancelled: databaseError : " + databaseError);
 

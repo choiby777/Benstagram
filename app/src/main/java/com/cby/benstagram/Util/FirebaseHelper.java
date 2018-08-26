@@ -3,6 +3,8 @@ package com.cby.benstagram.Util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cby.benstagram.R;
@@ -58,7 +60,8 @@ public class FirebaseHelper {
         return false;
     }
 
-    public void registerNewEmail(final String email , String userName, String password){
+
+    public void registerNewEmail(final String email , String userName, String password, final ProgressBar progressBar){
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -78,11 +81,13 @@ public class FirebaseHelper {
                             Toast.makeText(mContext, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
+
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }
 
-    public void sendVerificationEmail(){
+    private void sendVerificationEmail(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null){
@@ -213,9 +218,7 @@ public class FirebaseHelper {
             }
         }
 
-        UserSettings userSettings = new UserSettings(user , setting);
-
-        return userSettings;
+        return new UserSettings(user , setting);
     }
 
     public void updateUsername(String userName) {
