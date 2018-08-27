@@ -233,4 +233,14 @@ public class FirebaseHelper {
                 .child(mContext.getString(R.string.field_username))
                 .setValue(userName);
     }
+
+    public void updateEmail(String email) {
+        Log.d(TAG, "updateEmail: email : " + email);
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_users))
+                .child(mUserId)
+                .child(mContext.getString(R.string.field_email))
+                .setValue(email);
+
+    }
 }

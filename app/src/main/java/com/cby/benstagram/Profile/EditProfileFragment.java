@@ -1,5 +1,6 @@
 package com.cby.benstagram.Profile;
 
+import android.app.FragmentManager;
 import android.media.Image;
 import android.os.Bundle;
 import android.print.PrinterId;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cby.benstagram.Dialogs.ConfirmPasswordDialog;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.StringManipulation;
@@ -22,7 +24,14 @@ import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.cby.benstagram.models.UserSettings;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.ProviderQueryResult;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class EditProfileFragment extends Fragment
-        implements FirebaseAuth.AuthStateListener, View.OnClickListener {
+        implements FirebaseAuth.AuthStateListener, View.OnClickListener, ConfirmPasswordDialog.OnConfirmPasswordListener {
     private static final String TAG = "EditProfileFragment";
 
     private ImageView mProfileImage;
@@ -108,9 +117,9 @@ public class EditProfileFragment extends Fragment
         final String email = mEditEmail.getText().toString();
         final String phoneNumber = mEditPhoneNumber.getText().toString();
 
-        mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//        mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (!mUserSettings.getUser().getUsername().equals(userName)){
                     checkIfUsernameExists(userName);
@@ -120,16 +129,20 @@ public class EditProfileFragment extends Fragment
                 if (!mUserSettings.getUser().getEmail().equals(email)) {
 
                     // step 1 : 새로운 이메일과 비밀번호 사용자 확인
+                    ConfirmPasswordDialog dialog = new ConfirmPasswordDialog();
+                    dialog.show(getFragmentManager() , getString(R.string.confirm_password_dialog));
+                    dialog.setTargetFragment(EditProfileFragment.this, 1);
+
                     // step 2 : 해당 email이 이미 등록되 있는지 체크
                     // step 3 : auth와 database에 새로운 email 로 업데이트
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 
@@ -210,4 +223,66 @@ public class EditProfileFragment extends Fragment
             getActivity().finish();
         }
     }
+
+    @Override
+    public void onConfirmPasswordListener(String password) {
+        Log.d(TAG, "onConfirmPasswordListener: password : " + password);
+
+        // firebase 문서 참조
+        // Get auth credentials from the user for re-authentication. The example below shows
+        // email and password credentials but there are multiple possible providers,
+        // such as GoogleAuthProvider or FacebookAuthProvider.
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(mAuth.getCurrentUser().getEmail(), password);
+
+        // Prompt the user to re-provide their sign-in credentials
+        mAuth.getCurrentUser().reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Log.d(TAG, "User re-authenticated.");
+
+                            mAuth.fetchProvidersForEmail(mEditEmail.getText().toString())
+                                    .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+
+                                            if (task.isSuccessful()){
+                                                try {
+
+                                                    if (task.getResult().getProviders().size() == 1){
+                                                        Log.d(TAG, "onComplete: the email is already in use");
+                                                        Toast.makeText(getActivity(), "The email is already in use", Toast.LENGTH_SHORT).show();
+                                                    }else{
+                                                        Log.d(TAG, "onComplete: the email is not exist");
+
+                                                        mAuth.getCurrentUser().updateEmail(mEditEmail.getText().toString())
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        Log.d(TAG, "onComplete: task result : " + task.isSuccessful());
+
+                                                                        if (task.isSuccessful()){
+                                                                            Toast.makeText(getActivity(), "email updated", Toast.LENGTH_SHORT).show();
+                                                                            mFirebaseHelper.updateEmail(mEditEmail.getText().toString());
+                                                                        }
+                                                                    }
+                                                                });
+                                                    }
+
+                                                }catch (NullPointerException e){
+                                                    Log.e(TAG, "onComplete: NullPointerException : " + e.getMessage());
+                                                }
+                                            }
+                                        }
+                                    });
+                        }else {
+                            Log.d(TAG, "onComplete: User re-authentication failed");
+                        }
+                    }
+                });
+
+    }
+
 }
