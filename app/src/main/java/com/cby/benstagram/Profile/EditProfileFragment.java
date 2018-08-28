@@ -110,17 +110,18 @@ public class EditProfileFragment extends Fragment
     }
 
     private void saveProfileSettings(){
-        final String displayName = mEditDisplayName.getText().toString();
-        final String userName = mEditUserName.getText().toString();
-        final String website = mEditWebsite.getText().toString();
-        final String description = mEditDescription.getText().toString();
-        final String email = mEditEmail.getText().toString();
-        final String phoneNumber = mEditPhoneNumber.getText().toString();
+        String displayName = mEditDisplayName.getText().toString();
+        String userName = mEditUserName.getText().toString();
+        String website = mEditWebsite.getText().toString();
+        String description = mEditDescription.getText().toString();
+        String email = mEditEmail.getText().toString();
+        String phoneNumber = mEditPhoneNumber.getText().toString();
 
 //        mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                // case 1 : 사용자 이름이 수정된 경우
                 if (!mUserSettings.getUser().getUsername().equals(userName)){
                     checkIfUsernameExists(userName);
                 }
@@ -128,12 +129,12 @@ public class EditProfileFragment extends Fragment
                 // case 2 : email이 변경된 경우
                 if (!mUserSettings.getUser().getEmail().equals(email)) {
 
-                    // step 1 : 새로운 이메일과 비밀번호 사용자 확인
+                    // step 1 : 현재 이메일 계정의 비밀번호 확인
                     ConfirmPasswordDialog dialog = new ConfirmPasswordDialog();
                     dialog.show(getFragmentManager() , getString(R.string.confirm_password_dialog));
                     dialog.setTargetFragment(EditProfileFragment.this, 1);
 
-                    // step 2 : 해당 email이 이미 등록되 있는지 체크
+                    // step 2 : 수정입력한 email이 이미 등록되 있는지 체크
                     // step 3 : auth와 database에 새로운 email 로 업데이트
                 }
 //            }
@@ -143,6 +144,12 @@ public class EditProfileFragment extends Fragment
 //
 //            }
 //        });
+
+        if (mUserSettings.getSetting().getDisplay_name().equals(displayName)) displayName = null;
+        if (mUserSettings.getSetting().getWebsite().equals(website)) website = null;
+        if (mUserSettings.getSetting().getDescription().equals(description)) description = null;
+
+        mFirebaseHelper.updateUserAccountSettings(displayName , website , description , phoneNumber);
 
     }
 

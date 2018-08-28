@@ -243,4 +243,23 @@ public class FirebaseHelper {
                 .setValue(email);
 
     }
+
+    public void updateUserAccountSettings(String displayName, String website, String description, String phoneNumber) {
+
+        Log.d(TAG, "updateUserAccountSettings: ");
+
+        if (displayName != null) updateUserAccountSetting(mContext.getString(R.string.field_display_name) , displayName);
+        if (website != null) updateUserAccountSetting(mContext.getString(R.string.field_website) , website);
+        if (description != null) updateUserAccountSetting(mContext.getString(R.string.field_description) , description);
+    }
+
+    private void updateUserAccountSetting(String fieldName, String value) {
+
+        Log.d(TAG, "updateUserAccountSetting: " + String.format("%s : %s" , fieldName , value));
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(mUserId)
+                .child(fieldName)
+                .setValue(value);
+    }
 }
