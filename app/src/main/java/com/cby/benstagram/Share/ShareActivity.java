@@ -5,11 +5,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.print.PrinterId;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.support.design.widget.TabLayout;
 
+import com.cby.benstagram.Home.SectionsPagerAdapter;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.Permissions;
@@ -22,11 +26,12 @@ public class ShareActivity extends AppCompatActivity {
     private Context mContext  = ShareActivity.this;
     private static final int ACTIVITY_NUM = 2;
     private static final int VERIFY_PERMISSIONS_REQUEST = 1;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_share);
 
         Log.d(TAG, "onCreate: starting");
 
@@ -36,7 +41,24 @@ public class ShareActivity extends AppCompatActivity {
             verifyPermission(Permissions.PERMISSIONS);
         }
 
-        setupBottomNavigationView();
+        setupViewPager();
+
+        //setupBottomNavigationView();
+    }
+
+    private void setupViewPager() {
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new GalleryFragment());
+        adapter.addFragment(new PhotoFragment());
+
+        mViewPager = findViewById(R.id.container);
+        mViewPager.setAdapter(adapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabBottoms);
+        tabLayout.setupWithViewPager(mViewPager);
+
+        tabLayout.getTabAt(0).setText(R.string.gallery);
+        tabLayout.getTabAt(1).setText(R.string.photo);
     }
 
     private void verifyPermission(String[] permissions) {
