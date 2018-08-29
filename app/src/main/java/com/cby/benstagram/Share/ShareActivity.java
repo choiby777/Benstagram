@@ -61,6 +61,10 @@ public class ShareActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setText(R.string.photo);
     }
 
+    public int getCurrentPageNumber(){
+        return mViewPager.getCurrentItem();
+    }
+
     private void verifyPermission(String[] permissions) {
         ActivityCompat.requestPermissions(
                 ShareActivity.this,
@@ -79,7 +83,7 @@ public class ShareActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkPermissions(String permission) {
+    public boolean checkPermissions(String permission) {
 
         int permissionRequest = ActivityCompat.checkSelfPermission(ShareActivity.this, permission);
 
