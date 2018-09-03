@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -14,6 +16,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.Util.FilePaths;
+import com.cby.benstagram.Util.FileSearch;
+
+import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment implements View.OnClickListener {
 
@@ -28,6 +34,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     private TextView txtNext;
 
     //vars
+    private ArrayList<String> directories;
 
     @Nullable
     @Override
@@ -45,7 +52,40 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         imgClose.setOnClickListener(this);
         txtNext.setOnClickListener(this);
 
+        init();
+
         return view;
+    }
+
+    private void init() {
+
+        // 폴더 리스트를 가져와서 콤보박스를 구성한다.
+        FilePaths filePaths = new FilePaths();
+
+        if (FileSearch.getDirectoryPaths(filePaths.PICTURES) != null){
+            directories = FileSearch.getDirectoryPaths(filePaths.PICTURES);
+        }
+
+        directories.add(filePaths.CAMERA);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                directories);
+
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemSelected: " + directories.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -55,7 +95,6 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
             getActivity().finish();
         }else if (v.getId() == R.id.txtNext){
             Log.d(TAG, "onClick: clicked next button");
-
 
         }
     }
