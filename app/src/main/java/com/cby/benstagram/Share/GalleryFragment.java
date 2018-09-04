@@ -46,7 +46,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     //vars
     private ArrayList<String> directories;
     private String mAppend = "file:/";
-
+    private String mSelectedImagePath;
 
     @Nullable
     @Override
@@ -82,10 +82,19 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
         directories.add(filePaths.CAMERA);
 
+        ArrayList<String> directoryNames = new ArrayList<>();
+
+        for (int i=0; i<directories.size(); i++){
+            String directoryPath = directories.get(i);
+            int indexOfSlash = directoryPath.lastIndexOf("/");
+            String directoryName = directoryPath.substring(indexOfSlash + 1);
+            directoryNames.add(directoryName);
+        }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
-                directories);
+                directoryNames);
 
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -120,10 +129,13 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         GridImageAdapter adapter = new GridImageAdapter(getActivity() , R.layout.layout_grid_imageview, mAppend, imgURLs);
         gridView.setAdapter(adapter);
 
+        mSelectedImagePath = imgURLs.get(0);
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 setImage(imgURLs.get(position) , imageView, mAppend);
+                mSelectedImagePath = imgURLs.get(position);
             }
         });
     }
@@ -160,11 +172,16 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.imgClose){
+
             Log.d(TAG, "onClick: clicked close button");
             getActivity().finish();
+
         }else if (v.getId() == R.id.txtNext){
             Log.d(TAG, "onClick: clicked next button");
 
+            Intent intent = new Intent(getActivity(), NextActivity.class);
+            intent.putExtra(getString(R.string.selected_image) , mSelectedImagePath);
+            startActivity(intent);
         }
     }
 }
