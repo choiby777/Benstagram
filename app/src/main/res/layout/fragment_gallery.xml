@@ -46,8 +46,8 @@
             android:layout_height="0dp"
             android:layout_weight="50"
             android:numColumns="5"
-            android:verticalSpacing="1dp"
-            android:horizontalSpacing="1dp"
+            android:verticalSpacing="2dp"
+            android:horizontalSpacing="2dp"
             android:stretchMode="none"
             android:gravity="center">
 
