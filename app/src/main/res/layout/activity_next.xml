@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</android.support.constraint.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/relTopToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--top toolbar-->
+                <include layout="@layout/snippet_top_next_toolbar"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relTop2"
+                android:layout_below="@id/relTopToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <ImageView
+                    android:background="#d4d4d4"
+                    android:layout_margin="20dp"
+                    android:id="@+id/imgShare"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" />
+
+                <EditText
+                    android:layout_toRightOf="@id/imgShare"
+                    android:id="@+id/txt_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerVertical="true"
+                    android:textAlignment="center"
+                    android:background="@null"
+                    android:textSize="20sp"
+                    android:hint="description"/>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
