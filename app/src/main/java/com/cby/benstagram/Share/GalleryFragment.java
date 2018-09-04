@@ -1,5 +1,8 @@
 package com.cby.benstagram.Share;
 
+import android.content.Intent;
+import android.content.IntentSender;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,12 +21,19 @@ import android.widget.TextView;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FilePaths;
 import com.cby.benstagram.Util.FileSearch;
+import com.cby.benstagram.Util.GridImageAdapter;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "GalleryFragment";
+
+    //constance
+    private final static int NUM_GRID_COLUMNS = 3;
 
     //widgets
     private GridView gridView;
@@ -35,6 +45,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
     //vars
     private ArrayList<String> directories;
+    private String mAppend = "file:/";
+
 
     @Nullable
     @Override
@@ -51,6 +63,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
         imgClose.setOnClickListener(this);
         txtNext.setOnClickListener(this);
+
+        progressBar.setVisibility(View.GONE);
 
         init();
 
@@ -78,7 +92,10 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemSelected: " + directories.get(position));
+                String selectedDirectoryPath = directories.get(position);
+                Log.d(TAG, "onItemSelected: " + selectedDirectoryPath);
+
+                setupGridView(selectedDirectoryPath);
             }
 
             @Override
@@ -86,6 +103,58 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
             }
         });
+    }
+
+    private void setupGridView(String selectedDirectoryPath) {
+        Log.d(TAG, "setupGridView: " + selectedDirectoryPath);
+
+        // 선택한 폴더의 이미지 리스트를 가져온다.
+        final ArrayList<String> imgURLs = FileSearch.getFilePaths(selectedDirectoryPath);
+
+        // 해상도를 기준으로 이미지의 크기를 정하여 Grid에 set한다.
+        int gridWidth = getResources().getDisplayMetrics().widthPixels;
+        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
+        gridView.setColumnWidth(imageWidth);
+
+        // GridImageAdapter 생성하여 해당 widget에 set한다.
+        GridImageAdapter adapter = new GridImageAdapter(getActivity() , R.layout.layout_grid_imageview, mAppend, imgURLs);
+        gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setImage(imgURLs.get(position) , imageView, mAppend);
+            }
+        });
+    }
+
+    private void setImage(String imgURL, ImageView imageView, String append) {
+        Log.d(TAG, "setImage: " + append + imgURL);
+
+        ImageLoader imageLoader = ImageLoader.getInstance();
+
+        imageLoader.displayImage(append + imgURL, imageView, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
     @Override
