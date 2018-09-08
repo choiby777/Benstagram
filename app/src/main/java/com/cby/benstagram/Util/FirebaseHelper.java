@@ -262,4 +262,19 @@ public class FirebaseHelper {
                 .child(fieldName)
                 .setValue(value);
     }
+
+    public int getImageCount(DataSnapshot dataSnapshot) {
+
+        int imageCount = 0;
+
+        // 현재 사용자의 모든 이미지 노드들을 반복하면서 카운트를 구한다.
+        for (DataSnapshot ds : dataSnapshot
+                .child(mContext.getString(R.string.dbname_user_photos))
+                .child(mUserId)
+                .getChildren()){
+            imageCount++;
+        }
+
+        return imageCount;
+    }
 }

@@ -40,6 +40,7 @@ public class NextActivity extends AppCompatActivity
 
     //vars
     private String mAppend = "file:/";
+    private int imageCount = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,12 +80,14 @@ public class NextActivity extends AppCompatActivity
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDbReference = mFirebaseDatabase.getReference();
-        mFirebaseHelper = new FirebaseHelper(this);
+        mFirebaseHelper = new FirebaseHelper(NextActivity.this);
 
         mDbReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                imageCount = mFirebaseHelper.getImageCount(dataSnapshot);
 
+                Log.d(TAG, "onDataChange: user image count : " + imageCount);
             }
 
             @Override
