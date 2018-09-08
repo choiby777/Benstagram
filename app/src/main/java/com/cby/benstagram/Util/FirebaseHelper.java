@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.cby.benstagram.models.UserSettings;
@@ -30,6 +31,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FirebaseHelper {
     private static final String TAG = "FirebaseHelper";
@@ -292,7 +295,7 @@ public class FirebaseHelper {
         return imageCount;
     }
 
-    public void uploadNewPhoto(String photoType , String description , int imageCount, String imageUrl) {
+    public void uploadNewPhoto(String photoType , final String description , int imageCount, final String imageUrl) {
         Log.d(TAG, "uploadNewPhoto: " + String.format("%s , %s , %d , %s" , photoType , description , imageCount , imageUrl.toString()));
 
         FilePaths filePaths = new FilePaths();
@@ -303,21 +306,33 @@ public class FirebaseHelper {
             // 저장할 Firebase 경로 및 파일명 지정
             // photos/users/userid/photo1
             // photos/users/userid/photo2
-            StorageReference storageReference = mStorageReference
+            final StorageReference storageReference = mStorageReference
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/photo" + (imageCount + 1));
 
             // 이미지를 Bitmap으로 변환한다.
             Bitmap bitmap = ImageManager.getBitmap(imageUrl);
             byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
 
-            UploadTask uploadTask = storageReference.putBytes(bytes);
+            final UploadTask uploadTask = storageReference.putBytes(bytes);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                     Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
 
-                    //Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
 
+                            Log.d(TAG, "onSuccess: uri : " + uri.toString());
+
+                            // database의 photos 노드와 user_photos 노드에 새로 등록된 사진 정보를 등록한다.
+                            addPhotoToDatabase(description , uri.toString());
+
+                            // main feed로 이동하여 사용자가 사진들을 볼수 있도록 한다.
+
+                        }
+                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -343,5 +358,28 @@ public class FirebaseHelper {
 
         }
 
+    }
+
+    private void addPhotoToDatabase(String description, String imageUrl) {
+
+        String tags = StringManipulation.getTags(description);
+        String newPhotoKey = mDatabaseReference.child(mContext.getString(R.string.dbname_photos)).push().getKey();
+
+        Photo photo = new Photo();
+        photo.setCaption(description);
+        photo.setDate_created((new SimpleDateFormat("yyyy/MM/dd'T'HH:mm:ss'Z'").format(new Date())));
+        photo.setImage_path(imageUrl);
+        photo.setTags(tags);
+        photo.setUser_id(mUserId);
+        photo.setPhoto_id(newPhotoKey);
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_user_photos))
+                .child(mUserId)
+                .child(newPhotoKey)
+                .setValue(photo);
+
+        mDatabaseReference.child(mContext.getString(R.string.dbname_photos))
+                .child(newPhotoKey)
+                .setValue(photo);
     }
 }
