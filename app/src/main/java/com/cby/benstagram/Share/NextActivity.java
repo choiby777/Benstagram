@@ -7,8 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
@@ -22,6 +24,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class NextActivity extends AppCompatActivity
         implements View.OnClickListener, FirebaseAuth.AuthStateListener{
 
@@ -31,6 +36,7 @@ public class NextActivity extends AppCompatActivity
     private ImageView imgBack;
     private ImageView imgShare;
     private TextView txtShare;
+    private EditText txtDescription;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -41,6 +47,7 @@ public class NextActivity extends AppCompatActivity
     //vars
     private String mAppend = "file:/";
     private int imageCount = 0;
+    private String imageURL;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,7 +66,7 @@ public class NextActivity extends AppCompatActivity
     private void setImage() {
         Intent intent = getIntent();
 
-        String imageURL = getIntent().getStringExtra(getString(R.string.selected_image));
+        imageURL = getIntent().getStringExtra(getString(R.string.selected_image));
         UniversalImageLoader.setImage(imageURL , imgShare , null , mAppend);
     }
 
@@ -67,6 +74,7 @@ public class NextActivity extends AppCompatActivity
         imgBack = findViewById(R.id.imgBack);
         imgShare = findViewById(R.id.imgShare);
         txtShare = findViewById(R.id.txtShare);
+        txtDescription = findViewById(R.id.txtDescription);
 
         imgBack.setOnClickListener(this);
         txtShare.setOnClickListener(this);
@@ -108,6 +116,10 @@ public class NextActivity extends AppCompatActivity
             Log.d(TAG, "onClick: share clicked");
 
             // Upload image to firebase
+            Toast.makeText(this, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
+
+            String description = txtDescription.getText().toString();
+            mFirebaseHelper.uploadNewPhoto(getString(R.string.new_photo) , description, imageCount , imageURL);
         }
     }
 

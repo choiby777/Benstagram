@@ -1,6 +1,9 @@
 package com.cby.benstagram.Util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +15,8 @@ import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.cby.benstagram.models.UserSettings;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +24,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.net.URI;
 
 public class FirebaseHelper {
     private static final String TAG = "FirebaseHelper";
@@ -26,7 +37,9 @@ public class FirebaseHelper {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+    private StorageReference mStorageReference;
     private String mUserId;
+    private double mPhotoUploadProgress;
 
     public FirebaseHelper(Context mContext) {
         this.mContext = mContext;
@@ -34,6 +47,7 @@ public class FirebaseHelper {
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference();
+        mStorageReference = FirebaseStorage.getInstance().getReference();
 
         if (mAuth.getCurrentUser() != null){
             mUserId = mAuth.getCurrentUser().getUid();
@@ -276,5 +290,58 @@ public class FirebaseHelper {
         }
 
         return imageCount;
+    }
+
+    public void uploadNewPhoto(String photoType , String description , int imageCount, String imageUrl) {
+        Log.d(TAG, "uploadNewPhoto: " + String.format("%s , %s , %d , %s" , photoType , description , imageCount , imageUrl.toString()));
+
+        FilePaths filePaths = new FilePaths();
+
+        if (photoType.equals(mContext.getString(R.string.new_photo))){
+            Log.d(TAG, "uploadNewPhoto: new_photo");
+
+            // 저장할 Firebase 경로 및 파일명 지정
+            // photos/users/userid/photo1
+            // photos/users/userid/photo2
+            StorageReference storageReference = mStorageReference
+                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/photo" + (imageCount + 1));
+
+            // 이미지를 Bitmap으로 변환한다.
+            Bitmap bitmap = ImageManager.getBitmap(imageUrl);
+            byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
+
+            UploadTask uploadTask = storageReference.putBytes(bytes);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
+
+                    //Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(mContext, "photo upload failed", Toast.LENGTH_SHORT).show();
+                }
+
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                    if (progress - 15 > mPhotoUploadProgress){
+                        Toast.makeText(mContext, "photo upload progress : " + String.format("%.0f" , progress), Toast.LENGTH_SHORT).show();
+                        mPhotoUploadProgress = progress;
+                    }
+                }
+            });
+
+        }else if (photoType.equals(mContext.getString(R.string.profile_photo))){
+            Log.d(TAG, "uploadNewPhoto: profile_photo");
+
+
+        }
+
     }
 }
