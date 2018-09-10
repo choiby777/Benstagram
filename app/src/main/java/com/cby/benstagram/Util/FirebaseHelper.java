@@ -316,6 +316,12 @@ public class FirebaseHelper {
     private void uploadProfilePhoto(final String description, int imageCount, String imageUrl) {
         Log.d(TAG, "uploadProfilePhoto: ");
 
+        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
+        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
+        accountSettingActivity.setViewPager(fragementNumber);
+        //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
+
+
         FilePaths filePaths = new FilePaths();
 
         // 저장할 Firebase 경로 및 파일명 지정
@@ -342,12 +348,6 @@ public class FirebaseHelper {
 
                         // insert into 'user_account_setting' node에 이미지 정보 추가
                         setProfilePhotoToDatabase(uri.toString());
-
-                        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
-                        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
-                        accountSettingActivity.setViewPager(fragementNumber);
-
-                        //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
                     }
                 });
             }
