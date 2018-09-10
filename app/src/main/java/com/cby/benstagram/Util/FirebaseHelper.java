@@ -6,12 +6,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cby.benstagram.Home.HomeActivity;
+import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
@@ -339,7 +341,13 @@ public class FirebaseHelper {
                         Log.d(TAG, "onSuccess: uri : " + uri.toString());
 
                         // insert into 'user_account_setting' node에 이미지 정보 추가
-                        setProfilePhoto(uri.toString());
+                        setProfilePhotoToDatabase(uri.toString());
+
+                        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
+                        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
+                        accountSettingActivity.setViewPager(fragementNumber);
+
+                        //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
                     }
                 });
             }
@@ -362,7 +370,7 @@ public class FirebaseHelper {
         });
     }
 
-    private void setProfilePhoto(String imageUrl) {
+    private void setProfilePhotoToDatabase(String imageUrl) {
         Log.d(TAG, "setProfilePhoto: imageUrl : " + imageUrl);
 
         mDatabaseReference.child(mContext.getString(R.string.dbname_user_account_settings))

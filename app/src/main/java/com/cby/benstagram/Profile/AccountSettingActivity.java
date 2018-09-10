@@ -31,7 +31,7 @@ public class AccountSettingActivity extends AppCompatActivity {
     private Context mContext;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
-    private SectionStatePagerAdapter mPagerAdapter;
+    public SectionStatePagerAdapter mPagerAdapter;
 
 
     @Override
@@ -72,6 +72,8 @@ public class AccountSettingActivity extends AppCompatActivity {
             if (stringExtra.equals(getString(R.string.edit_profile_fragment))){
                 FirebaseHelper firebaseHelper = new FirebaseHelper(this);
                 firebaseHelper.uploadPhoto(getString(R.string.profile_photo) , null, 0, selectedImageUrl);
+
+                //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
             }
         }
 
