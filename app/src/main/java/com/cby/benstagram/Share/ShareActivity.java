@@ -46,6 +46,11 @@ public class ShareActivity extends AppCompatActivity {
         //setupBottomNavigationView();
     }
 
+    public int getTask(){
+        Log.d(TAG, "getTask: ");
+        return getIntent().getFlags();
+    }
+
     private void setupViewPager() {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new GalleryFragment());

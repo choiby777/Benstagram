@@ -1,6 +1,7 @@
 package com.cby.benstagram.Profile;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.print.PrinterId;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.cby.benstagram.Dialogs.ConfirmPasswordDialog;
 import com.cby.benstagram.R;
+import com.cby.benstagram.Share.ShareActivity;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.StringManipulation;
 import com.cby.benstagram.Util.UniversalImageLoader;
@@ -47,6 +49,7 @@ public class EditProfileFragment extends Fragment
     private ImageView mProfileImage;
     private EditText mEditUserName , mEditDisplayName, mEditWebsite,
             mEditDescription, mEditEmail, mEditPhoneNumber;
+    private TextView txtChangePhoto;
     private String mUserId;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
@@ -68,12 +71,14 @@ public class EditProfileFragment extends Fragment
         mEditDescription = view.findViewById(R.id.editText_description);
         mEditEmail = view.findViewById(R.id.editText_email);
         mEditPhoneNumber = view.findViewById(R.id.editText_phoneNumber);
+        txtChangePhoto = view.findViewById(R.id.txtChangePhoto);
 
         ImageView imageChecked = view.findViewById(R.id.image_checked);
-        imageChecked.setOnClickListener(this);
-
         ImageView backArrowImg = view.findViewById(R.id.backArrow);
+
+        imageChecked.setOnClickListener(this);
         backArrowImg.setOnClickListener(this);
+        txtChangePhoto.setOnClickListener(this);
 
         setProfileImage();
 
@@ -227,7 +232,14 @@ public class EditProfileFragment extends Fragment
             saveProfileSettings();
 
         }else if (viewId == R.id.backArrow){
+
             getActivity().finish();
+
+        }else if (viewId == R.id.txtChangePhoto){
+
+            Intent intent = new Intent(getActivity() , ShareActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.cby.benstagram.Util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.cby.benstagram.Home.HomeActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
@@ -295,69 +297,134 @@ public class FirebaseHelper {
         return imageCount;
     }
 
-    public void uploadNewPhoto(String photoType , final String description , int imageCount, final String imageUrl) {
-        Log.d(TAG, "uploadNewPhoto: " + String.format("%s , %s , %d , %s" , photoType , description , imageCount , imageUrl.toString()));
+    public void uploadPhoto(String photoType , final String description , int imageCount, final String imageUrl) {
+        Log.d(TAG, "uploadPhoto: " + String.format("%s , %s , %d , %s" , photoType , description , imageCount , imageUrl.toString()));
+
+        if (photoType.equals(mContext.getString(R.string.new_photo))){
+
+            uploadNewPhoto(description , imageCount, imageUrl);
+
+        }else if (photoType.equals(mContext.getString(R.string.profile_photo))){
+
+            uploadProfilePhoto(description , imageCount, imageUrl);
+        }
+
+    }
+
+    private void uploadProfilePhoto(final String description, int imageCount, String imageUrl) {
+        Log.d(TAG, "uploadProfilePhoto: ");
 
         FilePaths filePaths = new FilePaths();
 
-        if (photoType.equals(mContext.getString(R.string.new_photo))){
-            Log.d(TAG, "uploadNewPhoto: new_photo");
+        // 저장할 Firebase 경로 및 파일명 지정
+        // photos/users/userid/profile_photo
+        final StorageReference storageReference = mStorageReference
+                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/profile_photo");
 
-            // 저장할 Firebase 경로 및 파일명 지정
-            // photos/users/userid/photo1
-            // photos/users/userid/photo2
-            final StorageReference storageReference = mStorageReference
-                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/photo" + (imageCount + 1));
+        // 이미지를 Bitmap으로 변환한다.
+        Bitmap bitmap = ImageManager.getBitmap(imageUrl);
+        byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
 
-            // 이미지를 Bitmap으로 변환한다.
-            Bitmap bitmap = ImageManager.getBitmap(imageUrl);
-            byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
+        final UploadTask uploadTask = storageReference.putBytes(bytes);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-            final UploadTask uploadTask = storageReference.putBytes(bytes);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
 
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
+                        Log.d(TAG, "onSuccess: uri : " + uri.toString());
 
-                            Log.d(TAG, "onSuccess: uri : " + uri.toString());
-
-                            // database의 photos 노드와 user_photos 노드에 새로 등록된 사진 정보를 등록한다.
-                            addPhotoToDatabase(description , uri.toString());
-
-                            // main feed로 이동하여 사용자가 사진들을 볼수 있도록 한다.
-
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(mContext, "photo upload failed", Toast.LENGTH_SHORT).show();
-                }
-
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                    if (progress - 15 > mPhotoUploadProgress){
-                        Toast.makeText(mContext, "photo upload progress : " + String.format("%.0f" , progress), Toast.LENGTH_SHORT).show();
-                        mPhotoUploadProgress = progress;
+                        // insert into 'user_account_setting' node에 이미지 정보 추가
+                        setProfilePhoto(uri.toString());
                     }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(mContext, "photo upload failed", Toast.LENGTH_SHORT).show();
+            }
+
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                if (progress - 15 > mPhotoUploadProgress){
+                    Toast.makeText(mContext, "photo upload progress : " + String.format("%.0f" , progress), Toast.LENGTH_SHORT).show();
+                    mPhotoUploadProgress = progress;
                 }
-            });
+            }
+        });
+    }
 
-        }else if (photoType.equals(mContext.getString(R.string.profile_photo))){
-            Log.d(TAG, "uploadNewPhoto: profile_photo");
+    private void setProfilePhoto(String imageUrl) {
+        Log.d(TAG, "setProfilePhoto: imageUrl : " + imageUrl);
 
+        mDatabaseReference.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(mUserId)
+                .child(mContext.getString(R.string.profile_photo))
+                .setValue(imageUrl);
+    }
 
-        }
+    private void uploadNewPhoto(final String description, int imageCount, String imageUrl) {
+        Log.d(TAG, "uploadNewPhoto: ");
 
+        FilePaths filePaths = new FilePaths();
+
+        // 저장할 Firebase 경로 및 파일명 지정
+        // photos/users/userid/photo1
+        // photos/users/userid/photo2
+        final StorageReference storageReference = mStorageReference
+                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/photo" + (imageCount + 1));
+
+        // 이미지를 Bitmap으로 변환한다.
+        Bitmap bitmap = ImageManager.getBitmap(imageUrl);
+        byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
+
+        final UploadTask uploadTask = storageReference.putBytes(bytes);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
+
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+
+                        Log.d(TAG, "onSuccess: uri : " + uri.toString());
+
+                        // database의 photos 노드와 user_photos 노드에 새로 등록된 사진 정보를 등록한다.
+                        addPhotoToDatabase(description , uri.toString());
+
+                        // main feed로 이동하여 사용자가 사진들을 볼수 있도록 한다.
+                        Intent intent = new Intent(mContext , HomeActivity.class);
+                        mContext.startActivity(intent);
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(mContext, "photo upload failed", Toast.LENGTH_SHORT).show();
+            }
+
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                if (progress - 15 > mPhotoUploadProgress){
+                    Toast.makeText(mContext, "photo upload progress : " + String.format("%.0f" , progress), Toast.LENGTH_SHORT).show();
+                    mPhotoUploadProgress = progress;
+                }
+            }
+        });
     }
 
     private void addPhotoToDatabase(String description, String imageUrl) {

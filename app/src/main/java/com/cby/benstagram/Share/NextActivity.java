@@ -119,7 +119,7 @@ public class NextActivity extends AppCompatActivity
             Toast.makeText(this, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
 
             String description = txtDescription.getText().toString();
-            mFirebaseHelper.uploadNewPhoto(getString(R.string.new_photo) , description, imageCount , imageURL);
+            mFirebaseHelper.uploadPhoto(getString(R.string.new_photo) , description, imageCount , imageURL);
         }
     }
 

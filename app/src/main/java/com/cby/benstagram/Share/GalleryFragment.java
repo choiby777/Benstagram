@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.print.PrinterId;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FilePaths;
 import com.cby.benstagram.Util.FileSearch;
@@ -114,6 +116,11 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    private boolean isRootTask(){
+
+        return ((ShareActivity)getActivity()).getTask() == 0;
+    }
+
     private void setupGridView(String selectedDirectoryPath) {
         Log.d(TAG, "setupGridView: " + selectedDirectoryPath);
 
@@ -179,9 +186,16 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         }else if (v.getId() == R.id.txtNext){
             Log.d(TAG, "onClick: clicked next button");
 
-            Intent intent = new Intent(getActivity(), NextActivity.class);
-            intent.putExtra(getString(R.string.selected_image) , mSelectedImagePath);
-            startActivity(intent);
+            if (isRootTask()){
+                Intent intent = new Intent(getActivity(), NextActivity.class);
+                intent.putExtra(getString(R.string.selected_image) , mSelectedImagePath);
+                startActivity(intent);
+            }else{
+                Intent intent = new Intent(getActivity(), AccountSettingActivity.class);
+                intent.putExtra(getString(R.string.selected_image) , mSelectedImagePath);
+                intent.putExtra(getString(R.string.return_to_fragment) , getString(R.string.edit_profile_fragment));
+                startActivity(intent);
+            }
         }
     }
 }
