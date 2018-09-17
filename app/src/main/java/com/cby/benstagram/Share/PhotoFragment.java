@@ -2,6 +2,7 @@ package com.cby.benstagram.Share;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -12,9 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.Permissions;
 import com.google.android.gms.flags.IFlagProvider;
+
+import java.time.Instant;
 
 public class PhotoFragment extends Fragment implements View.OnClickListener {
 
@@ -68,6 +72,10 @@ public class PhotoFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private boolean isRootTask(){
+        return ((ShareActivity)getActivity()).getTask() == 0;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -76,7 +84,26 @@ public class PhotoFragment extends Fragment implements View.OnClickListener {
         if (requestCode == CAMERA_REQUEST_CODE){
             Log.d(TAG, "onActivityResult:  done open camera task");
 
+            Bitmap bitmap;
+            bitmap = (Bitmap)data.getExtras().get("data");
 
+            if (isRootTask()){
+
+            }else{
+                try {
+
+                    Log.d(TAG, "onActivityResult: received new bitmap form camera : " + bitmap);
+
+                    Intent intent = new Intent(getActivity() , AccountSettingActivity.class);
+                    intent.putExtra(getString(R.string.selected_bitmap) , bitmap);
+                    intent.putExtra(getString(R.string.return_to_fragment) , getString(R.string.edit_profile_fragment));
+                    startActivity(intent);
+                    getActivity().finish();
+
+                }catch (NullPointerException e){
+                    Log.e(TAG, "onActivityResult: " + e.getMessage());
+                }
+            }
         }
     }
 }

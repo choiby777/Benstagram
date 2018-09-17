@@ -117,7 +117,6 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     }
 
     private boolean isRootTask(){
-
         return ((ShareActivity)getActivity()).getTask() == 0;
     }
 

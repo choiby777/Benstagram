@@ -304,23 +304,29 @@ public class FirebaseHelper {
 
         if (photoType.equals(mContext.getString(R.string.new_photo))){
 
-            uploadNewPhoto(description , imageCount, imageUrl);
+            uploadNewPhoto(description , imageCount, imageUrl, null);
 
         }else if (photoType.equals(mContext.getString(R.string.profile_photo))){
 
-            uploadProfilePhoto(description , imageCount, imageUrl);
+            uploadProfilePhoto(description , imageCount, imageUrl, null);
         }
-
     }
 
-    private void uploadProfilePhoto(final String description, int imageCount, String imageUrl) {
+    public void uploadPhotoByBitmap(String photoType , final String description , int imageCount, final Bitmap bitmap) {
+        Log.d(TAG, "uploadPhoto: " + String.format("%s , %s , %d" , photoType , description , imageCount));
+
+        if (photoType.equals(mContext.getString(R.string.new_photo))){
+
+            uploadNewPhoto(description , imageCount, null, bitmap);
+
+        }else if (photoType.equals(mContext.getString(R.string.profile_photo))){
+
+            uploadProfilePhoto(description , imageCount, null, bitmap);
+        }
+    }
+
+    private void uploadProfilePhoto(final String description, int imageCount, String imageUrl, Bitmap bitmap) {
         Log.d(TAG, "uploadProfilePhoto: ");
-
-        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
-        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
-        accountSettingActivity.setViewPager(fragementNumber);
-        //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
-
 
         FilePaths filePaths = new FilePaths();
 
@@ -330,7 +336,10 @@ public class FirebaseHelper {
                 .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/profile_photo");
 
         // 이미지를 Bitmap으로 변환한다.
-        Bitmap bitmap = ImageManager.getBitmap(imageUrl);
+        if (bitmap == null){
+            bitmap = ImageManager.getBitmap(imageUrl);
+        }
+
         byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
 
         final UploadTask uploadTask = storageReference.putBytes(bytes);
@@ -348,6 +357,11 @@ public class FirebaseHelper {
 
                         // insert into 'user_account_setting' node에 이미지 정보 추가
                         setProfilePhotoToDatabase(uri.toString());
+
+                        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
+                        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
+                        accountSettingActivity.setViewPager(fragementNumber);
+
                     }
                 });
             }
@@ -379,7 +393,7 @@ public class FirebaseHelper {
                 .setValue(imageUrl);
     }
 
-    private void uploadNewPhoto(final String description, int imageCount, String imageUrl) {
+    private void uploadNewPhoto(final String description, int imageCount, String imageUrl, Bitmap bitmap) {
         Log.d(TAG, "uploadNewPhoto: ");
 
         FilePaths filePaths = new FilePaths();
@@ -391,7 +405,10 @@ public class FirebaseHelper {
                 .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + mUserId + "/photo" + (imageCount + 1));
 
         // 이미지를 Bitmap으로 변환한다.
-        Bitmap bitmap = ImageManager.getBitmap(imageUrl);
+        if (bitmap == null){
+            bitmap = ImageManager.getBitmap(imageUrl);
+        }
+
         byte[] bytes = ImageManager.getBytesFromBitmap(bitmap, 100);
 
         final UploadTask uploadTask = storageReference.putBytes(bytes);

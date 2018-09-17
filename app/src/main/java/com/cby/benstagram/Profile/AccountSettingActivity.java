@@ -2,6 +2,7 @@ package com.cby.benstagram.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -63,17 +64,28 @@ public class AccountSettingActivity extends AppCompatActivity {
     private void getIncomingIntent(){
         Intent intent  = getIntent();
 
-        if (intent.hasExtra(getString(R.string.selected_image))) {
-            Log.d(TAG, "getIncomingIntent: received change profile Photo");
+        String stringExtra = intent.getStringExtra(getString(R.string.return_to_fragment));
 
-            String stringExtra = intent.getStringExtra(getString(R.string.return_to_fragment));
-            String selectedImageUrl = intent.getStringExtra(getString(R.string.selected_image));
+        if (intent.hasExtra(getString(R.string.selected_image))
+                || intent.hasExtra(getString(R.string.selected_bitmap))) {
 
             if (stringExtra.equals(getString(R.string.edit_profile_fragment))){
-                FirebaseHelper firebaseHelper = new FirebaseHelper(this);
-                firebaseHelper.uploadPhoto(getString(R.string.profile_photo) , null, 0, selectedImageUrl);
 
-                //setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
+                FirebaseHelper firebaseHelper = new FirebaseHelper(this);
+
+                if (intent.hasExtra(getString(R.string.selected_image))) {
+                    Log.d(TAG, "getIncomingIntent: received change profile Photo");
+
+                    String selectedImageUrl = intent.getStringExtra(getString(R.string.selected_image));
+
+                    firebaseHelper.uploadPhoto(getString(R.string.profile_photo) , null, 0, selectedImageUrl);
+
+                }else if (intent.hasExtra(getString(R.string.selected_bitmap))){
+
+                    Bitmap bitmap = (Bitmap)intent.getParcelableExtra(getString(R.string.selected_bitmap));
+
+                    firebaseHelper.uploadPhotoByBitmap(getString(R.string.profile_photo) , null, 0, bitmap);
+                }
             }
         }
 
