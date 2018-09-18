@@ -3,18 +3,16 @@ package com.cby.benstagram.Util;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cby.benstagram.Home.HomeActivity;
-import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
+import com.cby.benstagram.EventListeners.UploadTaskEventListener;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
@@ -34,7 +32,6 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,6 +44,7 @@ public class FirebaseHelper {
     private StorageReference mStorageReference;
     private String mUserId;
     private double mPhotoUploadProgress;
+    private UploadTaskEventListener mUploadTaskEventListener;
 
     public FirebaseHelper(Context mContext) {
         this.mContext = mContext;
@@ -59,6 +57,10 @@ public class FirebaseHelper {
         if (mAuth.getCurrentUser() != null){
             mUserId = mAuth.getCurrentUser().getUid();
         }
+    }
+
+    public void setOnUploadTaskEvent(UploadTaskEventListener listener){
+        mUploadTaskEventListener = listener;
     }
 
     public boolean checkIfUsernameExists(String username , DataSnapshot dataSnapshot){
@@ -358,10 +360,10 @@ public class FirebaseHelper {
                         // insert into 'user_account_setting' node에 이미지 정보 추가
                         setProfilePhotoToDatabase(uri.toString());
 
-                        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
-                        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
-                        accountSettingActivity.setViewPager(fragementNumber);
-
+//                        AccountSettingActivity accountSettingActivity = (AccountSettingActivity)mContext;
+//                        int fragementNumber = accountSettingActivity.mPagerAdapter.getFragmentNumber(mContext.getString(R.string.edit_profile_fragment));
+//                        accountSettingActivity.setViewPager(fragementNumber);
+                        mUploadTaskEventListener.onSuccessEvent();
                     }
                 });
             }
@@ -369,12 +371,15 @@ public class FirebaseHelper {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(mContext, "photo upload failed", Toast.LENGTH_SHORT).show();
+                mUploadTaskEventListener.onFailureEvent();
             }
 
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                 double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                mUploadTaskEventListener.onProgressEvent(progress);
 
                 if (progress - 15 > mPhotoUploadProgress){
                     Toast.makeText(mContext, "photo upload progress : " + String.format("%.0f" , progress), Toast.LENGTH_SHORT).show();

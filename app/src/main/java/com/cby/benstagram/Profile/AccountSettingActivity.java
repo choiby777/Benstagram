@@ -66,34 +66,16 @@ public class AccountSettingActivity extends AppCompatActivity {
 
         String stringExtra = intent.getStringExtra(getString(R.string.return_to_fragment));
 
-        if (intent.hasExtra(getString(R.string.selected_image))
-                || intent.hasExtra(getString(R.string.selected_bitmap))) {
-
-            if (stringExtra.equals(getString(R.string.edit_profile_fragment))){
-
-                FirebaseHelper firebaseHelper = new FirebaseHelper(this);
-
-                if (intent.hasExtra(getString(R.string.selected_image))) {
-                    Log.d(TAG, "getIncomingIntent: received change profile Photo");
-
-                    String selectedImageUrl = intent.getStringExtra(getString(R.string.selected_image));
-
-                    firebaseHelper.uploadPhoto(getString(R.string.profile_photo) , null, 0, selectedImageUrl);
-
-                }else if (intent.hasExtra(getString(R.string.selected_bitmap))){
-
-                    Bitmap bitmap = (Bitmap)intent.getParcelableExtra(getString(R.string.selected_bitmap));
-
-                    firebaseHelper.uploadPhotoByBitmap(getString(R.string.profile_photo) , null, 0, bitmap);
-                }
-            }
+        // 사진 선택 또는 촬영후 실행되는 경우
+        if (intent.hasExtra(getString(R.string.selected_image)) ||
+            intent.hasExtra(getString(R.string.selected_bitmap))) {
+            setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
         }
 
         if (intent.hasExtra(getString(R.string.calling_activity))){
             Log.d(TAG, "getIncomingIntent: received incoming intent from " + getString(R.string.calling_activity));
             setViewPager(mPagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
         }
-
     }
 
     private void setupFragments() {

@@ -1,10 +1,8 @@
 package com.cby.benstagram.Profile;
 
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.media.Image;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.print.PrinterId;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,14 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cby.benstagram.Dialogs.ConfirmPasswordDialog;
 import com.cby.benstagram.R;
+import com.cby.benstagram.EventListeners.UploadTaskEventListener;
 import com.cby.benstagram.Share.ShareActivity;
 import com.cby.benstagram.Util.FirebaseHelper;
-import com.cby.benstagram.Util.StringManipulation;
+import com.cby.benstagram.Util.ImageManager;
 import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
@@ -31,16 +31,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.ProviderQueryResult;
-import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class EditProfileFragment extends Fragment
         implements FirebaseAuth.AuthStateListener, View.OnClickListener, ConfirmPasswordDialog.OnConfirmPasswordListener {
@@ -50,6 +47,7 @@ public class EditProfileFragment extends Fragment
     private EditText mEditUserName , mEditDisplayName, mEditWebsite,
             mEditDescription, mEditEmail, mEditPhoneNumber;
     private TextView txtChangePhoto;
+    private ProgressBar progressLoading;
     private String mUserId;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
@@ -72,6 +70,8 @@ public class EditProfileFragment extends Fragment
         mEditEmail = view.findViewById(R.id.editText_email);
         mEditPhoneNumber = view.findViewById(R.id.editText_phoneNumber);
         txtChangePhoto = view.findViewById(R.id.txtChangePhoto);
+        progressLoading = view.findViewById(R.id.progressLoading);
+        progressLoading.setVisibility(View.INVISIBLE);
 
         ImageView imageChecked = view.findViewById(R.id.image_checked);
         ImageView backArrowImg = view.findViewById(R.id.backArrow);
@@ -81,10 +81,72 @@ public class EditProfileFragment extends Fragment
         txtChangePhoto.setOnClickListener(this);
 
         setProfileImage();
-
         setupFirebaseAuth();
+        getIncomingIntent();
 
         return view;
+    }
+
+    private void getIncomingIntent() {
+        Intent intent  = getActivity().getIntent();
+
+        String stringExtra = intent.getStringExtra(getString(R.string.return_to_fragment));
+
+        // 사진 선택 또는 촬영후 실행되는 경우
+        if (intent.hasExtra(getString(R.string.selected_image)) ||
+            intent.hasExtra(getString(R.string.selected_bitmap))) {
+
+            if (stringExtra.equals(getString(R.string.edit_profile_fragment))){
+
+                Bitmap bitmap = null;
+
+                // 사진첩에서 선택한 경우 선택한 이미지 경로로부터 이미지를 가져온다.
+                if (intent.hasExtra(getString(R.string.selected_image))) {
+                    Log.d(TAG, "getIncomingIntent: received change profile Photo");
+
+                    String selectedImageUrl = intent.getStringExtra(getString(R.string.selected_image));
+
+                    bitmap = ImageManager.getBitmap(selectedImageUrl);
+                }
+                // 카메라를 실행하여 새로 사진을 촬영한 경우
+                else if (intent.hasExtra(getString(R.string.selected_bitmap))){
+
+                    // ShareActivity에서 전달받은 이미지를 가져온다
+                    bitmap = intent.getParcelableExtra(getString(R.string.selected_bitmap));
+                }
+
+                if (bitmap != null){
+                    // 사진을 업로드를 시작 한다.
+                    RunUploadProfileImage(bitmap);
+                }
+            }
+        }
+    }
+
+    public void RunUploadProfileImage(Bitmap bitmap){
+
+        progressLoading.setVisibility(View.VISIBLE);
+
+        // 업로드 상태 이벤트를 등록하고
+        mFirebaseHelper.setOnUploadTaskEvent(new UploadTaskEventListener() {
+            @Override
+            public void onSuccessEvent() {
+                progressLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailureEvent() {
+                progressLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onProgressEvent(double progress) {
+
+            }
+        });
+
+        // 서버에 사진파일을 업로드한다.
+        mFirebaseHelper.uploadPhotoByBitmap(getString(R.string.profile_photo) , null, 0, bitmap);
     }
 
     private void setupFirebaseAuth() {
