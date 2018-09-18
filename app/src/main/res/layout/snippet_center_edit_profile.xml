@@ -39,6 +39,8 @@
                 android:layout_marginTop="50dp"
                 android:layout_below="@id/txtChangePhoto"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
@@ -66,6 +68,8 @@
                 android:background="@drawable/grey_border_bottom"
                 android:layout_below="@id/relInputItem1"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
@@ -93,6 +97,8 @@
                 android:background="@drawable/grey_border_bottom"
                 android:layout_below="@id/relInputItem2"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
@@ -120,6 +126,8 @@
                 android:background="@drawable/grey_border_bottom"
                 android:layout_below="@id/relInputItem3"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
@@ -160,6 +168,8 @@
                 android:background="@drawable/grey_border_bottom"
                 android:layout_below="@id/privateInformation"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
@@ -187,6 +197,8 @@
                 android:background="@drawable/grey_border_bottom"
                 android:layout_below="@id/relInputItem5"
                 android:layout_width="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:layout_height="50dp">
 
                 <ImageView
