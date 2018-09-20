@@ -58,7 +58,6 @@ public class BottomNavigationViewHelper {
                 }
 
                 if (intent != null){
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     context.startActivity(intent);
                 }
 

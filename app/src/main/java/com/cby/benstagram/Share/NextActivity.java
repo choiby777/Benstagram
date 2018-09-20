@@ -1,6 +1,7 @@
 package com.cby.benstagram.Share;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +16,6 @@ import android.widget.Toast;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.UniversalImageLoader;
-import com.cby.benstagram.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,9 +23,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class NextActivity extends AppCompatActivity
         implements View.OnClickListener, FirebaseAuth.AuthStateListener{
@@ -47,7 +44,9 @@ public class NextActivity extends AppCompatActivity
     //vars
     private String mAppend = "file:/";
     private int imageCount = 0;
-    private String imageURL;
+    private String selectedImageURL;
+    private Bitmap acquiredPhoto;
+    private int imageType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,8 +65,20 @@ public class NextActivity extends AppCompatActivity
     private void setImage() {
         Intent intent = getIntent();
 
-        imageURL = getIntent().getStringExtra(getString(R.string.selected_image));
-        UniversalImageLoader.setImage(imageURL , imgShare , null , mAppend);
+        if (intent.hasExtra(getString(R.string.selected_image)))
+        {
+            imageType = R.string.selected_image;
+
+            selectedImageURL = getIntent().getStringExtra(getString(R.string.selected_image));
+            UniversalImageLoader.setImage(selectedImageURL, imgShare , null , mAppend);
+
+        }else if (intent.hasExtra(getString(R.string.selected_bitmap))){
+
+            imageType = R.string.selected_bitmap;
+
+            acquiredPhoto = getIntent().getParcelableExtra(getString(R.string.selected_bitmap));
+            imgShare.setImageBitmap(acquiredPhoto);
+        }
     }
 
     private void setupWidgets() {
@@ -119,7 +130,15 @@ public class NextActivity extends AppCompatActivity
             Toast.makeText(this, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
 
             String description = txtDescription.getText().toString();
-            mFirebaseHelper.uploadPhoto(getString(R.string.new_photo) , description, imageCount , imageURL);
+
+            if (imageType == R.string.selected_image){
+
+                mFirebaseHelper.uploadPhoto(getString(R.string.new_photo) , description, imageCount , selectedImageURL);
+
+            }else{
+
+                mFirebaseHelper.uploadPhotoByBitmap(getString(R.string.new_photo) , description, imageCount , acquiredPhoto);
+            }
         }
     }
 

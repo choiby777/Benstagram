@@ -90,6 +90,18 @@ public class PhotoFragment extends Fragment implements View.OnClickListener {
             // 중앙의 Add 버튼클릭으로 ShareActivity가 실행된 경우
             if (isRootTask()){
 
+                try {
+                    Log.d(TAG, "onActivityResult: received new bitmap form camera : " + bitmap);
+
+                    // AccountSettingActivity 로 촬영한 이미지를 전달하며 종료한다. (AccountSettingActivity 에서 Upload 진행)
+                    Intent intent = new Intent(getActivity() , NextActivity.class);
+                    intent.putExtra(getString(R.string.selected_bitmap) , bitmap);
+                    startActivity(intent);
+
+                }catch (NullPointerException e){
+                    Log.e(TAG, "onActivityResult: " + e.getMessage());
+                }
+
             }
             // ProfileEdit에서 Change Photo로 ShareActivity가 실행된 경우
             else{
