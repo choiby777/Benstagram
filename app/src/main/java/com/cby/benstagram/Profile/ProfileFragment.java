@@ -3,6 +3,7 @@ package com.cby.benstagram.Profile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.FontRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.GridImageAdapter;
 import com.cby.benstagram.Util.UniversalImageLoader;
+import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.cby.benstagram.models.UserSettings;
@@ -33,6 +35,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -45,6 +48,7 @@ public class ProfileFragment extends Fragment
 
     private static final String TAG = "ProfileFragment";
     private static final int ACTIVITY_NUM = 4;
+    private static final int NUM_GRID_COLUMNS = 4;
 
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUserName , mWebSite, mDescription;
     private ProgressBar mProgressBar;
@@ -88,6 +92,8 @@ public class ProfileFragment extends Fragment
         setupBottomNavigationView();
         setupFirebaseAuth();
         //setupGridImageTestDatas();
+        setupGridView();
+
 
         TextView mTxtEditProfile = view.findViewById(R.id.txtEditProfile);
         mTxtEditProfile.setOnClickListener(this);
@@ -120,6 +126,41 @@ public class ProfileFragment extends Fragment
         menuItem.setChecked(true);
     }
 
+    private void setupGridView() {
+
+        Log.d(TAG, "setupGridView: start");
+
+        final ArrayList<String> imgURLs = new ArrayList<>();
+        final ArrayList<Photo> photos = new ArrayList<>();
+
+        Query query = mDbReference
+                .child(getString(R.string.dbname_user_photos))
+                .child(mAuth.getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for ( DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    photos.add(singleSnapshot.getValue(Photo.class));
+                }
+
+                for (int i=0; i<photos.size(); i++){
+                    imgURLs.add(photos.get(i).getImage_path());
+                }
+
+
+                setupGridImage(imgURLs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: query canclled");
+            }
+        });
+
+        Log.d(TAG, "setupGridView: end");
+    }
 
     private void setupGridImageTestDatas(){
 
@@ -155,12 +196,9 @@ public class ProfileFragment extends Fragment
 
     private void setupGridImage(ArrayList<String> imgURLs) {
 
-        GridView gridView = getActivity().findViewById(R.id.gridImages);
-
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
-        int gridColumnCount = 3;
 
-        int imageWidth = gridWidth / gridColumnCount;
+        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
 
         gridView.setColumnWidth(imageWidth);
 
