@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -49,6 +50,12 @@ public class ProfileFragment extends Fragment
     private static final String TAG = "ProfileFragment";
     private static final int ACTIVITY_NUM = 4;
     private static final int NUM_GRID_COLUMNS = 4;
+
+    public interface OnGridImageSelectedListener{
+         void onGridImageSelected(Photo photo , int activityNumber);
+    }
+
+    OnGridImageSelectedListener mOnGridImageSelectedListener;
 
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUserName , mWebSite, mDescription;
     private ProgressBar mProgressBar;
@@ -101,6 +108,18 @@ public class ProfileFragment extends Fragment
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+
+        try {
+            mOnGridImageSelectedListener = (OnGridImageSelectedListener) getActivity();
+        }catch (ClassCastException e){
+            Log.e(TAG, "onAttach: ClassCastException " + e.getMessage() );
+        }
+
+        super.onAttach(context);
+    }
+
     private void setupToolbar(){
 
         ((ProfileActivity)getActivity()).setSupportActionBar(toolbar);
@@ -131,7 +150,6 @@ public class ProfileFragment extends Fragment
 
         Log.d(TAG, "setupGridView: start");
 
-        final ArrayList<String> imgURLs = new ArrayList<>();
         final ArrayList<Photo> photos = new ArrayList<>();
 
         Query query = mDbReference
@@ -146,12 +164,7 @@ public class ProfileFragment extends Fragment
                     photos.add(singleSnapshot.getValue(Photo.class));
                 }
 
-                for (int i=0; i<photos.size(); i++){
-                    imgURLs.add(photos.get(i).getImage_path());
-                }
-
-
-                setupGridImage(imgURLs);
+                setupGridImages(photos);
             }
 
             @Override
@@ -163,39 +176,45 @@ public class ProfileFragment extends Fragment
         Log.d(TAG, "setupGridView: end");
     }
 
-    private void setupGridImageTestDatas(){
+//    private void setupGridImageTestDatas(){
+//
+//        ArrayList<String> imgURLs = new ArrayList<>();
+//
+//        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
+//        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
+//        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+//        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
+//        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
+//        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+//        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+//        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
+//        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
+//        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
+//        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+//
+//        setupGridImage(imgURLs);
+//    }
 
-        ArrayList<String> imgURLs = new ArrayList<>();
+    private void setupGridImages(final ArrayList<Photo> photos) {
 
-        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
-        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
-        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
-        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
-        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
-        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
-        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
-        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
-        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
-        imgURLs.add("http://japanlinkstravel.co.uk/wp-content/uploads/2017/02/People-Places8.jpg");
-        imgURLs.add("http://www.sebang.ca/files/attach/images/233/711/34c46fc64b99e02efb73c8e721ceba2c.jpg");
-        imgURLs.add("http://post.phinf.naver.net/20151020_84/ulsanwbeauty_14453097928398eTGT_JPEG/mug_obj_144530979344446946.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA0MTBfOTgg/MDAxNTIzMzI1MTE3MTkz.65867CEZ7AFMmIRMvXmkVJ2HmjPFLKmRcv0AW6hcamog.vB6_pfa27r2ca2LSMbhOSCvrm5QCbeLixtRy5T5MMDMg.JPEG/IRfPPO2KyzMYFdbJbMSWdvyvlUiE.jpg");
-        imgURLs.add("http://imgnews.naver.net/image/082/2016/04/13/20160413000213_0_99_20160418172719.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODA1MTBfMTYg/MDAxNTI1OTM3MTcwMDQ0.uCCmZaJXM7GRte5fJnt-oY4kbz5s-1WZwR7eqUTE4iYg.YIz4rTMovU6xn-zRgM83WtdSz3HASBK5-QQ33tECD1Eg.JPEG/IN0JdD5y4Ph1TefGDc-Jsylhl7h4.jpg");
-        imgURLs.add("http://post.phinf.naver.net/MjAxODAyMTNfMTY2/MDAxNTE4NTA4MjI4NTg4.-0CgGbb9OH18b2U46ZSP2Zoa2CwJ4JsEvk1G06pipzAg.4_jUaCI7Lwm0mcacaJqdOdunc0LakG6tn9Lwc5KERTQg.JPEG/I_jKFXxwFVyHydGqU0NjdSteKxpQ.jpg");
+        final ArrayList<String> imgURLs = new ArrayList<>();
 
-        setupGridImage(imgURLs);
-    }
-
-    private void setupGridImage(ArrayList<String> imgURLs) {
+        for (int i=0; i<photos.size(); i++){
+            imgURLs.add(photos.get(i).getImage_path());
+        }
 
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -204,7 +223,15 @@ public class ProfileFragment extends Fragment
         gridView.setColumnWidth(imageWidth);
 
         GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_imageview, "" , imgURLs);
+
         gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mOnGridImageSelectedListener.onGridImageSelected(photos.get(position) , ACTIVITY_NUM);
+            }
+        });
     }
 
     private void setupFirebaseAuth() {
