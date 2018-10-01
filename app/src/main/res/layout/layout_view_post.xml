@@ -18,7 +18,7 @@
                 android:id="@+id/relLayoutUserInfo">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/imageUser"
+                    android:id="@+id/imgUser"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/dog"
@@ -28,7 +28,7 @@
 
                 <TextView
                     android:id="@+id/txtShare"
-                    android:layout_toRightOf="@+id/imageUser"
+                    android:layout_toRightOf="@+id/imgUser"
                     android:layout_marginLeft="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/txt_display_name"
+                    android:id="@+id/txtText1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -131,7 +131,7 @@
                     android:text="Liked by aaaaaaaaa,bbbbbbbb, and 52 others sdfsd dfsdfsdfssdfsdfs"/>
 
                 <TextView
-                    android:id="@+id/txt_display_name2"
+                    android:id="@+id/txtText2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -140,7 +140,7 @@
                     android:text="ben.choi #test #aaaa # 123"/>
 
                 <TextView
-                    android:id="@+id/txt_description"
+                    android:id="@+id/txtText3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -148,7 +148,7 @@
                     android:text="I live in korea"/>
 
                 <TextView
-                    android:id="@+id/txt_website"
+                    android:id="@+id/txtText4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/link_blue"
