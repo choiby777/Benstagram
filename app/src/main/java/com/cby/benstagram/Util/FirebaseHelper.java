@@ -136,6 +136,7 @@ public class FirebaseHelper {
                 .setValue(user);
 
         UserAccountSettings setting = new UserAccountSettings(
+                mUserId,
                 description,
                 username,
                 0,

@@ -1,6 +1,7 @@
 package com.cby.benstagram.models;
 
 public class UserAccountSettings {
+    private String user_id;
     private String description;
     private String display_name;
     private long followers;
@@ -10,8 +11,9 @@ public class UserAccountSettings {
     private String username;
     private String website;
 
-    public UserAccountSettings(String description, String display_name, long followers, long following,
+    public UserAccountSettings(String user_id, String description, String display_name, long followers, long following,
                                long posts, String profile_photo, String username, String website) {
+        this.user_id = user_id;
         this.description = description;
         this.display_name = display_name;
         this.followers = followers;
@@ -23,6 +25,14 @@ public class UserAccountSettings {
     }
 
     public UserAccountSettings() {
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getDescription() {
@@ -92,7 +102,8 @@ public class UserAccountSettings {
     @Override
     public String toString() {
         return "UserAccountSettings{" +
-                "description='" + description + '\'' +
+                "user_id='" + user_id + '\'' +
+                ", description='" + description + '\'' +
                 ", display_name='" + display_name + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
