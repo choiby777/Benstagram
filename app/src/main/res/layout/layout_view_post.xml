@@ -64,39 +64,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_centerVertical="true"
-                    android:id="@+id/imageUnLike"
-                    android:src="@drawable/ic_heart_outline"
-                    />
+                <RelativeLayout
+                    android:id="@+id/relHeart"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/imgHeartWhite"
+                        android:src="@drawable/ic_heart_white"
+                        />
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/imgHeartRed"
+                        android:src="@drawable/ic_heart_red"
+                        />
+
+                </RelativeLayout>
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_toRightOf="@+id/relHeart"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_marginStart="10dp"
                     android:layout_centerVertical="true"
-                    android:id="@+id/imageLike"
-                    android:src="@drawable/ic_heart_red"
-                    android:visibility="invisible"
-                    />
-
-                <ImageView
-                    android:layout_toRightOf="@+id/imageUnLike"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_centerVertical="true"
-                    android:id="@+id/imageMessage"
+                    android:id="@+id/imgComments"
                     android:src="@drawable/ic_speech_bubble"
                     />
 
                 <ImageView
-                    android:layout_toRightOf="@+id/imageMessage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_toRightOf="@+id/imgComments"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_marginStart="10dp"
                     android:layout_centerVertical="true"
                     android:id="@+id/imageSend"

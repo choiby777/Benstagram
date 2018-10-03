@@ -1,26 +1,23 @@
-package com.cby.benstagram;
+package com.cby.benstagram.Util;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cby.benstagram.Util.BottomNavigationViewHelper;
-import com.cby.benstagram.Util.FirebaseHelper;
-import com.cby.benstagram.Util.SquareImageView;
-import com.cby.benstagram.Util.UniversalImageLoader;
+import com.cby.benstagram.R;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.UserAccountSettings;
-import com.cby.benstagram.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,7 +44,7 @@ public class ViewPostFragment extends Fragment {
     // Widgets
     private SquareImageView mPostImage;
     private BottomNavigationViewEx bottomNavigationViewEx;
-    private ImageView imgUser, mBackArrow, mEllipses, mHeartWhite, mHeartRed, mMessage, mSend;
+    private ImageView imgUser, mBackArrow, mEllipses, imgHeartWhite, imgHeartRed, mMessage, mSend;
     private TextView txtUserName, txtLikedInfo, txtTags, txtCommentInfo, txtDaysInfo;
 
     // Firebase
@@ -56,9 +53,63 @@ public class ViewPostFragment extends Fragment {
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
 
+    private GestureDetector mGestureDetector;
+    private HeartToggle mHeartToggle;
+
     public ViewPostFragment() {
         super();
         setArguments(new Bundle());
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ViewPostFragment");
+
+        View view = inflater.inflate(R.layout.fragment_view_post, container, false);
+
+        mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
+
+        setupWidgets(view);
+
+        imgHeartRed.setVisibility(View.GONE);
+        imgHeartWhite.setVisibility(View.VISIBLE);
+
+        mHeartToggle = new HeartToggle(imgHeartWhite , imgHeartRed);
+
+        try {
+            mActivityNumber = getActivityNumberFromBundle();
+            mPhoto = getPhotoFromBundle();
+
+            UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, "onCreateView: " + e.getMessage());
+        }
+
+        setupFirebaseAuth();
+        getPhotoDetails();
+        setupWidgetValues();
+        setupBottomNavigationView();
+
+        testToggle();
+
+        return view;
+    }
+
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+
+            mHeartToggle.toggleLike();
+            return true;
+        }
     }
 
     private void setupWidgets(View view) {
@@ -71,6 +122,26 @@ public class ViewPostFragment extends Fragment {
         txtTags = view.findViewById(R.id.txtTags);
         txtCommentInfo = view.findViewById(R.id.txtCommentInfo);
         txtDaysInfo = view.findViewById(R.id.txtDaysInfo);
+        imgHeartWhite = view.findViewById(R.id.imgHeartWhite);
+        imgHeartRed = view.findViewById(R.id.imgHeartRed);
+    }
+
+    private void testToggle(){
+        imgHeartRed.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: red heart touch");
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
+
+        imgHeartWhite.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: white heart touch");
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
     }
 
     private void setupFirebaseAuth() {
@@ -109,33 +180,6 @@ public class ViewPostFragment extends Fragment {
     private void setupProfileWidgets() {
         txtUserName.setText(mUserAccountSettings.getDisplay_name());
         UniversalImageLoader.setImage(mUserAccountSettings.getProfile_photo(), imgUser, null, "");
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ViewPostFragment");
-
-        View view = inflater.inflate(R.layout.fragment_view_post, container, false);
-
-        setupWidgets(view);
-
-        try {
-            mActivityNumber = getActivityNumberFromBundle();
-            mPhoto = getPhotoFromBundle();
-
-            UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
-
-        } catch (NullPointerException e) {
-            Log.e(TAG, "onCreateView: " + e.getMessage());
-        }
-
-        setupFirebaseAuth();
-        getPhotoDetails();
-        setupWidgetValues();
-        setupBottomNavigationView();
-
-        return view;
     }
 
     private void setupWidgetValues() {
