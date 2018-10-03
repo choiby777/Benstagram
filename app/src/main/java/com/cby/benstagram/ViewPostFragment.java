@@ -81,7 +81,11 @@ public class ViewPostFragment extends Fragment{
 
     private void setupWidgetValues() {
         String value = getTimestampDifference();
-        txtDaysInfo.setText(value + " DAYS AGO");
+        if (!value.equals("0")){
+            txtDaysInfo.setText(value + " DAYS AGO");
+        }else {
+            txtDaysInfo.setText("TODAY");
+        }
     }
 
     private void setupBottomNavigationView(){
