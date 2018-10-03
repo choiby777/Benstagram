@@ -20,6 +20,13 @@ import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.Photo;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 public class ViewPostFragment extends Fragment{
     private static final String TAG = "ViewPostFragment";
 
@@ -30,7 +37,7 @@ public class ViewPostFragment extends Fragment{
     private SquareImageView mPostImage;
     private BottomNavigationViewEx bottomNavigationViewEx;
     private ImageView mBackArrow , mEllipses, mHeartWhite, mHeartRed, mMessage, mSend;
-    private TextView txtText1 , txtText2, txtText3, txtText4;
+    private TextView txtLikedInfo , txtTags, txtCommentInfo, txtDaysInfo;
 
     public ViewPostFragment() {
         super();
@@ -38,14 +45,13 @@ public class ViewPostFragment extends Fragment{
     }
 
     private void setupWidgets(View view) {
-
         mPostImage = view.findViewById(R.id.imageViewPhoto);
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavViewBar);
         mBackArrow = view.findViewById(R.id.backArrow);
-        txtText1 = view.findViewById(R.id.txtText1);
-        txtText2 = view.findViewById(R.id.txtText2);
-        txtText3 = view.findViewById(R.id.txtText3);
-        txtText4 = view.findViewById(R.id.txtText4);
+        txtLikedInfo = view.findViewById(R.id.txtLikedInfo);
+        txtTags = view.findViewById(R.id.txtTags);
+        txtCommentInfo = view.findViewById(R.id.txtCommentInfo);
+        txtDaysInfo = view.findViewById(R.id.txtDaysInfo);
     }
 
     @Nullable
@@ -62,13 +68,20 @@ public class ViewPostFragment extends Fragment{
             mPhoto = getPhotoFromBundle();
 
             UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
+
         }catch (NullPointerException e){
             Log.e(TAG, "onCreateView: " + e.getMessage() );
         }
 
+        setupWidgetValues();
         setupBottomNavigationView();
 
         return view;
+    }
+
+    private void setupWidgetValues() {
+        String value = getTimestampDifference();
+        txtDaysInfo.setText(value + " DAYS AGO");
     }
 
     private void setupBottomNavigationView(){
@@ -100,5 +113,33 @@ public class ViewPostFragment extends Fragment{
         }else{
             return null;
         }
+    }
+
+    private String getTimestampDifference(){
+        Log.d(TAG, "getTimestampDifference: start");
+
+        String differenceString = "";
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd'T'HH:mm:ss'Z'" , Locale.ROOT);
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date today = calendar.getTime();
+        sdf.format(today);
+        Date timestamp;
+
+        final String photoTimestamp = mPhoto.getDate_created();
+
+        try {
+            timestamp = sdf.parse(photoTimestamp);
+            long differenceValue = today.getTime() - timestamp.getTime();
+            differenceValue = differenceValue / 1000 / 60 / 60 /24;
+            differenceString = String.valueOf(Math.round(differenceValue));
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            differenceString = "0";
+        }
+
+        return differenceString;
     }
 }
