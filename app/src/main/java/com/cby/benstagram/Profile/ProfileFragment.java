@@ -26,6 +26,7 @@ import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.GridImageAdapter;
 import com.cby.benstagram.Util.UniversalImageLoader;
+import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
@@ -41,6 +42,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -161,7 +165,29 @@ public class ProfileFragment extends Fragment
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for ( DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    photos.add(singleSnapshot.getValue(Photo.class));
+
+                    Photo photo = new Photo();
+                    Map<String , Object> objectMap = (HashMap<String , Object>)singleSnapshot.getValue();
+                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
+                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
+                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
+                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
+
+                    List<Like> likeList = new ArrayList<Like>();
+
+                    for (DataSnapshot subSnapshot : singleSnapshot
+                            .child(getString(R.string.field_likes)).getChildren()){
+
+                        Like like = subSnapshot.getValue(Like.class);
+                        likeList.add(like);
+                    }
+
+                    photo.setLikes(likeList);
+
+                    //photos.add(singleSnapshot.getValue(Photo.class));
+                    photos.add(photo);
                 }
 
                 setupGridImages(photos);

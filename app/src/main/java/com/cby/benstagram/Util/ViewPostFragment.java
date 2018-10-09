@@ -16,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
+import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -53,8 +55,10 @@ public class ViewPostFragment extends Fragment {
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
 
+    // Vars
     private GestureDetector mGestureDetector;
     private HeartToggle mHeartToggle;
+    private Boolean isLikedbyCurrentUser;
 
     public ViewPostFragment() {
         super();
@@ -68,12 +72,11 @@ public class ViewPostFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_view_post, container, false);
 
+        setupFirebaseAuth();
+
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
 
         setupWidgets(view);
-
-        imgHeartRed.setVisibility(View.GONE);
-        imgHeartWhite.setVisibility(View.VISIBLE);
 
         mHeartToggle = new HeartToggle(imgHeartWhite , imgHeartRed);
 
@@ -81,13 +84,17 @@ public class ViewPostFragment extends Fragment {
             mActivityNumber = getActivityNumberFromBundle();
             mPhoto = getPhotoFromBundle();
 
+            isLikedbyCurrentUser = mPhoto.isExistUserInLikes(mAuth.getUid());
+
+            if (isLikedbyCurrentUser) mHeartToggle.setToLike();
+            else mHeartToggle.setToUnLike();
+
             UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
 
         } catch (NullPointerException e) {
             Log.e(TAG, "onCreateView: " + e.getMessage());
         }
 
-        setupFirebaseAuth();
         getPhotoDetails();
         setupWidgetValues();
         setupBottomNavigationView();
@@ -107,9 +114,146 @@ public class ViewPostFragment extends Fragment {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
 
-            mHeartToggle.toggleLike();
+            mHeartToggle.toggle();
+
+            // 현재 사진의 Likes 리스트(like한 user_id 리스트) 정보를 쿼리한다.
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+            Query query = reference
+                    .child(getString(R.string.dbname_photos))
+                    .child(mPhoto.getPhoto_id())
+                    .child(getString(R.string.field_likes));
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    String currentUserKey = "";
+
+                    // 등록된 like 정보가 있다면 현재 계정의 아이디가 있는지 확인 후 있다면 UnLike 없다면 Like
+                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+
+                        String uderId = singleSnapshot.child(getString(R.string.field_user_id)).getValue(String.class);
+
+                        if (mAuth.getCurrentUser().getUid().equals(uderId)){
+                            currentUserKey = singleSnapshot.getKey();
+                            break;
+                        }
+                    }
+
+                    if (currentUserKey.isEmpty()) addNewLike();
+                    else removeLike(currentUserKey);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
             return true;
         }
+    }
+
+    private void removeLike(String key) {
+        Log.d(TAG, "removeLike: remove key : " + key);
+
+        mDbReference.child(getString(R.string.dbname_photos))
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .child(key)
+                .removeValue();
+
+        mDbReference.child(getString(R.string.dbname_user_photos))
+                .child(mAuth.getUid())
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .child(key)
+                .removeValue();
+    }
+
+    private void addNewLike() {
+        Log.d(TAG, "addNewLike: start");
+
+        String newLikeKey = mDbReference.push().getKey();
+
+        Log.d(TAG, "addNewLike: new key : " + newLikeKey);
+
+        Like like = new Like();
+        like.setUser_id(mAuth.getUid());
+
+        mDbReference.child(getString(R.string.dbname_photos))
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .child(newLikeKey)
+                .setValue(like);
+
+        mDbReference.child(getString(R.string.dbname_user_photos))
+                .child(mAuth.getUid())
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .child(newLikeKey)
+                .setValue(like);
+
+    }
+
+    private String getLikesString(){
+        String likesString = "";
+
+        // 현재 사진의 Likes 리스트(like한 user_id 리스트) 정보를 쿼리한다.
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child(getString(R.string.dbname_photos))
+                .orderByChild(mPhoto.getPhoto_id())
+                .equalTo(getString(R.string.field_likes));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                final StringBuilder userNames = new StringBuilder();
+
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    String likeUserId = singleSnapshot.getValue(Like.class).getUser_id();
+
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                    Query query = reference
+                            .child(getString(R.string.dbname_users))
+                            .orderByChild(getString(R.string.field_user_id))
+                            .equalTo(likeUserId);
+
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot singleDataSnapshot : dataSnapshot.getChildren()){
+                                User likeUser = singleDataSnapshot.getValue(User.class);
+
+                                userNames.append(likeUser.getUsername());
+                                userNames.append(",");
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        return likesString;
     }
 
     private void setupWidgets(View view) {

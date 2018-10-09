@@ -3,6 +3,8 @@ package com.cby.benstagram.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 public class Photo implements Parcelable{
 
     private String caption;
@@ -11,17 +13,19 @@ public class Photo implements Parcelable{
     private String photo_id;
     private String user_id;
     private String tags;
+    private List<Like> likes;
 
     public Photo() {
     }
 
-    public Photo(String caption, String date_created, String image_path, String photo_id, String user_id, String tags) {
+    public Photo(String caption, String date_created, String image_path, String photo_id, String user_id, String tags, List<Like> likes) {
         this.caption = caption;
         this.date_created = date_created;
         this.image_path = image_path;
         this.photo_id = photo_id;
         this.user_id = user_id;
         this.tags = tags;
+        this.likes = likes;
     }
 
     protected Photo(Parcel in) {
@@ -44,6 +48,35 @@ public class Photo implements Parcelable{
             return new Photo[size];
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(caption);
+        dest.writeString(date_created);
+        dest.writeString(image_path);
+        dest.writeString(photo_id);
+        dest.writeString(user_id);
+        dest.writeString(tags);
+    }
+
+    @Override
+    public String toString() {
+        return "Photo{" +
+                "caption='" + caption + '\'' +
+                ", date_created='" + date_created + '\'' +
+                ", image_path='" + image_path + '\'' +
+                ", photo_id='" + photo_id + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", tags='" + tags + '\'' +
+                ", likes=" + likes +
+                '}';
+    }
 
     public String getCaption() {
         return caption;
@@ -93,30 +126,19 @@ public class Photo implements Parcelable{
         this.tags = tags;
     }
 
-    @Override
-    public String toString() {
-        return "Photo{" +
-                "caption='" + caption + '\'' +
-                ", date_created='" + date_created + '\'' +
-                ", image_path='" + image_path + '\'' +
-                ", photo_id='" + photo_id + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", tags='" + tags + '\'' +
-                '}';
+    public List<Like> getLikes() {
+        return likes;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public boolean isExistUserInLikes(String userId){
+        for (int i=0; i<likes.size(); i++){
+            if (likes.get(i).getUser_id().equals(userId)) return true;
+        }
+
+        return false;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(caption);
-        dest.writeString(date_created);
-        dest.writeString(image_path);
-        dest.writeString(photo_id);
-        dest.writeString(user_id);
-        dest.writeString(tags);
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
     }
 }
