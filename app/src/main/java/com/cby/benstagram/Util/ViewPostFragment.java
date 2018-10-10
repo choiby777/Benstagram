@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ViewPostFragment extends Fragment {
+public class ViewPostFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ViewPostFragment";
 
     private int mActivityNumber = 0;
@@ -101,7 +101,22 @@ public class ViewPostFragment extends Fragment {
 
         testToggle();
 
+        txtCommentInfo.setOnClickListener(this);
+
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.txtCommentInfo){
+            showAllComment();
+        }
+    }
+
+    private void showAllComment() {
+        Log.d(TAG, "showAllComment: start");
+
+
     }
 
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -335,7 +350,7 @@ public class ViewPostFragment extends Fragment {
         }
 
         txtTags.setText(mPhoto.getTags());
-        txtCommentInfo.setText(mPhoto.getCaption());
+        txtCommentInfo.setText("View all 3 comments");
     }
 
     private void setupBottomNavigationView() {

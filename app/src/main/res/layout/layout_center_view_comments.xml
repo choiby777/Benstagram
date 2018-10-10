@@ -1,0 +1,69 @@
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <LinearLayout
+            android:padding="10dp"
+            android:id="@+id/linlayout1"
+            android:background="@drawable/white_grey_border_bottom"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imgUser"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/dog"
+                    android:layout_centerVertical="true"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="@color/grey"
+                    />
+
+                <LinearLayout
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ben #모닝, #커피, #아메리카노, #안녕하세요가, #나다라가마자사타차다가가나나"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"/>
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="8주"
+                                    android:textColor="@color/grey"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="20dp"
+                                    android:text="답글달기"
+                                    android:textColor="@color/grey"/>
+
+                        </LinearLayout>
+                </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lvAccountSettings"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/linlayout1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+
+</RelativeLayout>
