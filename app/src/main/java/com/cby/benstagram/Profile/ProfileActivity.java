@@ -9,10 +9,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.Util.ViewCommentsFragment;
 import com.cby.benstagram.Util.ViewPostFragment;
 import com.cby.benstagram.models.Photo;
 
-public class ProfileActivity extends AppCompatActivity implements ProfileFragment.OnGridImageSelectedListener{
+public class ProfileActivity extends AppCompatActivity implements
+        ProfileFragment.OnGridImageSelectedListener,
+        ViewPostFragment.OnCommentThreadSelectedListener{
 
     private static final String TAG = "ProfileActivity";
     private Context mContext  = ProfileActivity.this;
@@ -57,4 +60,12 @@ public class ProfileActivity extends AppCompatActivity implements ProfileFragmen
 
     }
 
+    @Override
+    public void OnCommentThreadSelectedListener(Photo photo) {
+        ViewCommentsFragment viewCommentsFragment = new ViewCommentsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container , viewCommentsFragment);
+        transaction.addToBackStack(getString(R.string.view_post_fragment));
+        transaction.commit();
+    }
 }

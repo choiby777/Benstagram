@@ -1,5 +1,6 @@
 package com.cby.benstagram.Util;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
@@ -38,6 +40,11 @@ import java.util.TimeZone;
 
 public class ViewPostFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ViewPostFragment";
+
+    public interface OnCommentThreadSelectedListener{
+        void OnCommentThreadSelectedListener(Photo photo);
+    }
+    OnCommentThreadSelectedListener mOnCommentThreadSelectedListener;
 
     private int mActivityNumber = 0;
     private Photo mPhoto;
@@ -107,16 +114,21 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.txtCommentInfo){
-            showAllComment();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mOnCommentThreadSelectedListener = (OnCommentThreadSelectedListener)getActivity();
+        }catch (Exception ex){
+
         }
     }
 
-    private void showAllComment() {
-        Log.d(TAG, "showAllComment: start");
-
-
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.txtCommentInfo){
+            mOnCommentThreadSelectedListener.OnCommentThreadSelectedListener(mPhoto);
+        }
     }
 
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
