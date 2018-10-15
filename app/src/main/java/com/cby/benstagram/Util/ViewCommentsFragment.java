@@ -45,6 +45,7 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
     private static final String TAG = "ViewCommentsFragment";
 
     private Photo photo;
+    private List<Comment> commentList;
 
     // Widgets
     private ListView listComments;
@@ -97,7 +98,7 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
     }
 
     private void setupCommentList() {
-        List<Comment> commentList = new ArrayList<>();
+        commentList = new ArrayList<>();
 
         commentList.add(new Comment());
         commentList.add(new Comment());
@@ -147,5 +148,7 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
                 .child(getString(R.string.field_comments))
                 .child(newKey)
                 .setValue(comment);
+
+        commentList.add(comment);
     }
 }
