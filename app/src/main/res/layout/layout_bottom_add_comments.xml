@@ -18,9 +18,9 @@
 
         <EditText
             android:layout_toRightOf="@id/imgUser"
-            android:layout_toLeftOf="@+id/add"
+            android:layout_toLeftOf="@+id/imgAddComment"
             android:layout_marginLeft="10dp"
-            android:id="@+id/editTextComment"
+            android:id="@+id/txtInputComment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@null"
@@ -32,7 +32,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="10dp"
-            android:id="@+id/add"
+            android:id="@+id/imgAddComment"
             android:src="@drawable/ic_checked"
             />
 

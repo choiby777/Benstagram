@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,9 +41,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ViewCommentsFragment extends Fragment{
+public class ViewCommentsFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ViewCommentsFragment";
+
+    private Photo photo;
+
+    // Widgets
     private ListView listComments;
+    private ImageView imgUser;
+    private EditText txtInputComment;
+    private ImageView imgAddComment;
+
+    // Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDbReference;
+    private FirebaseHelper mFirebaseHelper;
 
     @Nullable
     @Override
@@ -50,11 +64,36 @@ public class ViewCommentsFragment extends Fragment{
 
         View view = inflater.inflate(R.layout.fragment_view_comments, container, false);
 
+        setupFirebaseAuth();
+
         setupWidgets(view);
 
         setupCommentList();
 
+        photo = getPhotoFromBundle();
+
+        imgAddComment.setOnClickListener(this);
+
         return view;
+    }
+
+    private Photo getPhotoFromBundle() {
+
+        Bundle args = getArguments();
+
+        if (args != null) {
+            return args.getParcelable(getString(R.string.photo));
+        } else {
+            return null;
+        }
+    }
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: start");
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDbReference = mFirebaseDatabase.getReference();
+        mFirebaseHelper = new FirebaseHelper(getActivity());
     }
 
     private void setupCommentList() {
@@ -70,5 +109,43 @@ public class ViewCommentsFragment extends Fragment{
 
     private void setupWidgets(View view) {
         listComments = view.findViewById(R.id.listComments);
+        imgUser = view.findViewById(R.id.imgUser);
+        txtInputComment = view.findViewById(R.id.txtInputComment);
+        imgAddComment = view.findViewById(R.id.imgAddComment);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.imgAddComment){
+            Log.d(TAG, "onClick: imgAddComment clicked");
+
+            addNewComment();
+
+            txtInputComment.setText("");
+        }
+    }
+
+    private void addNewComment() {
+        Log.d(TAG, "addNewComment: start");
+
+        Comment comment = new Comment();
+        comment.setUser_id(mAuth.getUid());
+        comment.setComment(txtInputComment.getText().toString());
+        comment.setDate_created((new SimpleDateFormat("yyyy/MM/dd'T'HH:mm:ss'Z'").format(new Date())));
+
+        String newKey = mDbReference.push().getKey();
+
+        mDbReference.child(getString(R.string.dbname_photos))
+                .child(photo.getPhoto_id())
+                .child(getString(R.string.field_comments))
+                .child(newKey)
+                .setValue(comment);
+
+        mDbReference.child(getString(R.string.dbname_user_photos))
+                .child(mAuth.getUid())
+                .child(photo.getPhoto_id())
+                .child(getString(R.string.field_comments))
+                .child(newKey)
+                .setValue(comment);
     }
 }

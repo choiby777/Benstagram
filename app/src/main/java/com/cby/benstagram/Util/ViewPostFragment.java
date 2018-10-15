@@ -385,7 +385,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public Photo getPhotoFromBundle() {
+    private Photo getPhotoFromBundle() {
 
         Bundle args = getArguments();
 

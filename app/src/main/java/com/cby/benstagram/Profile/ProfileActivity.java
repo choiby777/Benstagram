@@ -63,6 +63,10 @@ public class ProfileActivity extends AppCompatActivity implements
     @Override
     public void OnCommentThreadSelectedListener(Photo photo) {
         ViewCommentsFragment viewCommentsFragment = new ViewCommentsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(getString(R.string.photo) , photo);
+        viewCommentsFragment.setArguments(args);
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container , viewCommentsFragment);
         transaction.addToBackStack(getString(R.string.view_post_fragment));
