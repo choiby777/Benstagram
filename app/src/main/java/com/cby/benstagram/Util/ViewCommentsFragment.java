@@ -13,9 +13,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.Comment;
 import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
@@ -31,13 +33,16 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class ViewCommentsFragment extends Fragment{
     private static final String TAG = "ViewCommentsFragment";
+    private ListView listComments;
 
     @Nullable
     @Override
@@ -45,6 +50,25 @@ public class ViewCommentsFragment extends Fragment{
 
         View view = inflater.inflate(R.layout.fragment_view_comments, container, false);
 
+        setupWidgets(view);
+
+        setupCommentList();
+
         return view;
+    }
+
+    private void setupCommentList() {
+        List<Comment> commentList = new ArrayList<>();
+
+        commentList.add(new Comment());
+        commentList.add(new Comment());
+        commentList.add(new Comment());
+
+        CommentListAdapter adapter = new CommentListAdapter(getActivity() , R.layout.layout_comment, commentList);
+        listComments.setAdapter(adapter);
+    }
+
+    private void setupWidgets(View view) {
+        listComments = view.findViewById(R.id.listComments);
     }
 }
