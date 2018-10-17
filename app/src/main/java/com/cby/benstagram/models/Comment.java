@@ -39,6 +39,16 @@ public class Comment {
         return likes;
     }
 
+    public String getLikesCountText() {
+        int count = 0;
+        if (likes == null) count = 0;
+        else{
+            count = likes.size();
+        }
+
+        return String.format("%d likes" , count);
+    }
+
     public void setLikes(List<Like> likes) {
         this.likes = likes;
     }

@@ -22,10 +22,12 @@ import android.widget.TextView;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Comment;
+import com.cby.benstagram.models.CommentUser;
 import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
+import com.cby.benstagram.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -54,11 +56,12 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
 
     private InputMethodManager inputMethodManager;
     private Photo photo;
-    private List<Comment> commentList;
+    private List<CommentUser> commentList;
 
     // Widgets
     private ListView listComments;
     private ImageView imgUser;
+    private ImageView imgCommentInputUser;
     private EditText txtInputComment;
     private ImageView imgAddComment;
 
@@ -85,9 +88,55 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
 
         setupCommentsEventListener();
 
+        setupProfilePhoto();
+
         imgAddComment.setOnClickListener(this);
 
         return view;
+    }
+
+    private void setupProfilePhoto() {
+
+        final String userId = mAuth.getCurrentUser().getUid();
+
+        Query query = mDbReference.child(getString(R.string.dbname_users))
+                .child(userId);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                final User user = dataSnapshot.getValue(User.class);
+
+                Query queryUserAccountSetting = mDbReference
+                        .child(getString(R.string.dbname_user_account_settings))
+                        .child(userId);
+
+                queryUserAccountSetting.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        UserAccountSettings userAccountSettings = dataSnapshot.getValue(UserAccountSettings.class);
+
+                        UserSettings userSettings = new UserSettings(user , userAccountSettings);
+
+                        //setProfileWidgets(userSettings);
+                        UniversalImageLoader.setImage(userAccountSettings.getProfile_photo() , imgUser , null , "");
+                        UniversalImageLoader.setImage(userAccountSettings.getProfile_photo() , imgCommentInputUser , null , "");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setupCommentsEventListener() {
@@ -101,11 +150,34 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         Log.d(TAG, "onChildAdded: " + s);
 
-                        Comment comment = dataSnapshot.getValue(Comment.class);
+                        final Comment comment = dataSnapshot.getValue(Comment.class);
 
-                        commentList.add(comment);
+                        String commentUserId = comment.getUser_id();
 
-                        setupCommentListAdapter();
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                        Query query = reference
+                                .child(getString(R.string.dbname_user_account_settings))
+                                .child(commentUserId);
+
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                UserAccountSettings userAccountSettings = dataSnapshot.getValue(UserAccountSettings.class);
+
+                                CommentUser commentUser = new CommentUser(comment , userAccountSettings);
+                                commentList.add(commentUser);
+
+                                setupCommentListAdapter();
+
+                                Log.d(TAG, "onDataChange: userAccountSettings : " + userAccountSettings.toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
 
                     @Override
@@ -157,6 +229,7 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
     private void setupWidgets(View view) {
         listComments = view.findViewById(R.id.listComments);
         imgUser = view.findViewById(R.id.imgUser);
+        imgCommentInputUser = view.findViewById(R.id.imgCommentInputUser);
         txtInputComment = view.findViewById(R.id.txtInputComment);
         imgAddComment = view.findViewById(R.id.imgAddComment);
     }
@@ -171,38 +244,6 @@ public class ViewCommentsFragment extends Fragment implements View.OnClickListen
             txtInputComment.setText("");
             inputMethodManager.hideSoftInputFromWindow(txtInputComment.getWindowToken(),0);
         }
-    }
-
-    private void setupCommentList(){
-        Log.d(TAG, "setupCommentList: start");
-
-        Query query = mDbReference
-                .child(getString(R.string.dbname_photos))
-                .child(photo.getPhoto_id())
-                .child(getString(R.string.field_comments));
-
-        commentList.clear();
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange: comment count : " + dataSnapshot.getChildrenCount());
-
-                for ( DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-
-                    Comment comment = singleSnapshot.getValue(Comment.class);
-
-                    commentList.add(comment);
-                }
-
-                setupCommentListAdapter();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: query canclled");
-            }
-        });
     }
 
     private void addNewComment() {

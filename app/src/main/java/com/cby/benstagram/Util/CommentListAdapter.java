@@ -1,21 +1,36 @@
 package com.cby.benstagram.Util;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Comment;
+import com.cby.benstagram.models.CommentUser;
+import com.cby.benstagram.models.User;
+import com.cby.benstagram.models.UserAccountSettings;
+import com.cby.benstagram.models.UserSettings;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.List;
 
-public class CommentListAdapter extends ArrayAdapter<Comment> {
+public class CommentListAdapter extends ArrayAdapter<CommentUser> {
 
     private static final String TAG = "CommentListAdapter";
     private LayoutInflater mLayoutInflater;
@@ -25,7 +40,7 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
     public CommentListAdapter(
             @NonNull Context context,
             int resource,
-            @NonNull List<Comment> objects) {
+            @NonNull List<CommentUser> objects) {
         super(context, resource, objects);
 
         this.mContext = context;
@@ -42,7 +57,6 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         TextView txtReply;
         ImageView imgHeart;
     }
-
 
     @NonNull
     @Override
@@ -66,42 +80,14 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
             holder = (CommentListAdapter.ViewHolder) convertView.getTag();
         }
 
-        holder.txtUserName.setText("TestUser");
-        holder.txtComment.setText(getItem(position).getComment());
-        holder.txtDays.setText("2 Days");
-        holder.txtLikeCount.setText("5 likes");
+        CommentUser comment = getItem(position);
 
-//        ImageLoader imageLoader = ImageLoader.getInstance();
-//
-//        imageLoader.displayImage(mAppend + imgURL, holder.mImageView, new ImageLoadingListener() {
-//            @Override
-//            public void onLoadingStarted(String imageUri, View view) {
-//                if (holder.mProgressBar != null){
-//                    holder.mProgressBar.setVisibility(View.VISIBLE);
-//                }
-//            }
-//
-//            @Override
-//            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-//                if (holder.mProgressBar != null){
-//                    holder.mProgressBar.setVisibility(View.GONE);
-//                }
-//            }
-//
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                if (holder.mProgressBar != null){
-//                    holder.mProgressBar.setVisibility(View.GONE);
-//                }
-//            }
-//
-//            @Override
-//            public void onLoadingCancelled(String imageUri, View view) {
-//                if (holder.mProgressBar != null){
-//                    holder.mProgressBar.setVisibility(View.GONE);
-//                }
-//            }
-//        });
+        holder.txtUserName.setText(comment.getUserAccountSettings().getDisplay_name());
+        holder.txtComment.setText(comment.getComment().getComment());
+        holder.txtDays.setText("2 Days");
+        holder.txtLikeCount.setText(comment.getComment().getLikesCountText());
+
+        UniversalImageLoader.setImage(comment.getUserAccountSettings().getProfile_photo() , holder.imgUser , null , "");
 
         return convertView;
     }
