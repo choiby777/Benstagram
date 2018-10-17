@@ -17,7 +17,7 @@
             />
 
         <EditText
-            android:layout_toRightOf="@id/imgUser"
+            android:layout_toRightOf="@id/imgCommentInputUser"
             android:layout_toLeftOf="@+id/imgAddComment"
             android:layout_marginLeft="10dp"
             android:id="@+id/txtInputComment"
