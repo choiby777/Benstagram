@@ -27,7 +27,6 @@
             android:hint="Add a comment...."/>
 
         <ImageView
-            android:background="#3c94e6"
             android:layout_alignParentRight="true"
             android:layout_width="30dp"
             android:layout_height="30dp"

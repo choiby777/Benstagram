@@ -362,7 +362,24 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         }
 
         txtTags.setText(mPhoto.getTags());
-        txtCommentInfo.setText("View all 3 comments");
+        //txtCommentInfo.setText("View all 3 comments");
+
+        Query query = mDbReference.child(getString(R.string.dbname_photos))
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_comments));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long commentCount = dataSnapshot.getChildrenCount();
+                txtCommentInfo.setText(String.format("View all %d comments" , commentCount));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setupBottomNavigationView() {
