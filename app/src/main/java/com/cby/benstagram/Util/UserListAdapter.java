@@ -11,11 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
-import com.cby.benstagram.models.UserSettings;
+import com.cby.benstagram.models.User;
 
 import java.util.List;
 
-public class UserListAdapter extends ArrayAdapter<UserSettings> {
+public class UserListAdapter extends ArrayAdapter<User> {
 
     private static final String TAG = "UserListAdapter";
     private LayoutInflater mLayoutInflater;
@@ -25,7 +25,7 @@ public class UserListAdapter extends ArrayAdapter<UserSettings> {
     public UserListAdapter(
             @NonNull Context context,
             int resource,
-            @NonNull List<UserSettings> objects) {
+            @NonNull List<User> objects) {
         super(context, resource, objects);
 
         this.mContext = context;
@@ -57,12 +57,12 @@ public class UserListAdapter extends ArrayAdapter<UserSettings> {
             holder = (UserListAdapter.ViewHolder) convertView.getTag();
         }
 
-        UserSettings userSettings = getItem(position);
+        User user = getItem(position);
 
-        holder.tvUserName.setText(userSettings.getUser().getUsername());
-        holder.tvUserEmail.setText(userSettings.getUser().getEmail());
+        holder.tvUserName.setText(user.getUsername());
+        holder.tvUserEmail.setText(user.getEmail());
 
-        UniversalImageLoader.setImage(userSettings.getSetting().getProfile_photo() , holder.imgUser , null , "");
+        //UniversalImageLoader.setImage(userSettings.getSetting().getProfile_photo() , holder.imgUser , null , "");
 
         return convertView;
     }

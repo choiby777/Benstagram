@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -45,7 +48,7 @@ public class SearchActivity extends AppCompatActivity {
     private ListView lsvUsers;
 
     // vars
-    private List<UserSettings> userList;
+    private List<User> userList;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -68,8 +71,73 @@ public class SearchActivity extends AppCompatActivity {
         userList = new ArrayList<>();
 
         setupUserListAdapter();
-        //updateUserList();
-        loadAllUsers();
+        iniTextListener();
+        //loadAllUsers();
+    }
+
+    private void iniTextListener() {
+        Log.d(TAG, "iniTextListener: start");
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                //String text = edtSearch.getText().toString().toLowerCase(Locale.getDefault());
+                String text = edtSearch.getText().toString();
+                searchForMatch(text);
+            }
+        });
+    }
+
+    private void searchForMatch(String keyword) {
+        Log.d(TAG, "searchForMath: keyword : " + keyword);
+
+        userList.clear();
+        if (keyword.isEmpty()) return;
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference.child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_username))
+                .equalTo(keyword);
+
+//        Query query = reference.child(getString(R.string.dbname_users))
+//                .orderByChild(getString(R.string.field_username));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot singleSanpshot : dataSnapshot.getChildren()){
+
+                        User user = singleSanpshot.getValue(User.class);
+
+                        Log.d(TAG, "onDataChange: found user : " + user.getUsername());
+
+                        userList.add(user);
+
+                        setupUserListAdapter();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void setupFirebaseAuth() {
@@ -102,8 +170,8 @@ public class SearchActivity extends AppCompatActivity {
 
                                 UserAccountSettings userAccountSettings = dataSnapshot.getValue(UserAccountSettings.class);
 
-                                UserSettings userSettings = new UserSettings(user , userAccountSettings);
-                                userList.add(userSettings);
+                                //UserSettings userSettings = new UserSettings(user , userAccountSettings);
+                                //userList.add(userSettings);
 
                                 setupUserListAdapter();
                             }
