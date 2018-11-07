@@ -6,6 +6,7 @@
     <string name="view_post_fragment">View Post</string>
     <string name="sign_out_fragment">Sign Out</string>
     <string name="profile_fragment">Profile</string>
+    <string name="view_profile_fragment">Profile</string>
 
     <!--Dialog names-->
     <string name="confirm_password_dialog">ConfirmPassword</string>
@@ -49,16 +50,19 @@
     <string name="selected_image">selected_image</string>
     <string name="selected_bitmap">selected_bitmap</string>
     <string name="return_to_fragment">return_to_fragment</string>
+    <string name="selected_user">selected_user</string>
 
     <!--Bundle arg names-->
     <string name="activity_number">activity_number</string>
 
     <!--activity names-->
     <string name="profile_activity">Profile Activity</string>
+    <string name="search_activity">Search Activity</string>
 
     <!--strings-->
     <string name="gallery">GALLERY</string>
     <string name="photo">PHOTO</string>
+    <string name="user">USER</string>
     <string name="open_camera">OPEN CAMERA</string>
 
 </resources>

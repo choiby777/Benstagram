@@ -1,6 +1,7 @@
 package com.cby.benstagram.Search;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.FirebaseHelper;
@@ -227,7 +229,10 @@ public class SearchActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onItemClick: selectedUser : " + selectedUser.getUsername());
 
-
+                Intent intent = new Intent(mContext , ProfileActivity.class);
+                intent.putExtra(getString(R.string.calling_activity) , getString(R.string.search_activity));
+                intent.putExtra(getString(R.string.selected_user) , selectedUser);
+                startActivity(intent);
             }
         });
 
