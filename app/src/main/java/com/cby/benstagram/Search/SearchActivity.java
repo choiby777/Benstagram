@@ -49,6 +49,7 @@ public class SearchActivity extends AppCompatActivity {
 
     // vars
     private List<User> userList;
+    private UserListAdapter userListAdapter;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -71,6 +72,7 @@ public class SearchActivity extends AppCompatActivity {
         userList = new ArrayList<>();
 
         setupUserListAdapter();
+        searchForMatch("");
         iniTextListener();
         //loadAllUsers();
     }
@@ -104,10 +106,10 @@ public class SearchActivity extends AppCompatActivity {
 
         userList.clear();
 
-        if (keyword.isEmpty()){
-            setupUserListAdapter();
-            return;
-        }
+//        if (keyword.isEmpty()){
+//            setupUserListAdapter();
+//            return;
+//        }
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
@@ -115,8 +117,10 @@ public class SearchActivity extends AppCompatActivity {
                 .orderByChild(getString(R.string.field_username))
                 .equalTo(keyword);
 
-//        Query query = reference.child(getString(R.string.dbname_users))
-//                .orderByChild(getString(R.string.field_username));
+        if (keyword.isEmpty()){
+            query = reference.child(getString(R.string.dbname_users))
+                    .orderByChild(getString(R.string.field_username));
+        }
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -210,13 +214,20 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupUserListAdapter() {
-        final UserListAdapter adapter = new UserListAdapter(this , R.layout.layout_userlist_item, userList);
-        lsvUsers.setAdapter(adapter);
+        userListAdapter = new UserListAdapter(this , R.layout.layout_userlist_item, userList);
+        lsvUsers.setAdapter(userListAdapter);
         lsvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Log.d(TAG, "onItemClick: clicked Item position : " + position);
+
+                User selectedUser = userList.get(position);
+
+                Log.d(TAG, "onItemClick: selectedUser : " + selectedUser.getUsername());
+
+
             }
         });
 
