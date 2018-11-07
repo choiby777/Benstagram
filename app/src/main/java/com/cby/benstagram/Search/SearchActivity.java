@@ -103,7 +103,11 @@ public class SearchActivity extends AppCompatActivity {
         Log.d(TAG, "searchForMath: keyword : " + keyword);
 
         userList.clear();
-        if (keyword.isEmpty()) return;
+
+        if (keyword.isEmpty()){
+            setupUserListAdapter();
+            return;
+        }
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
@@ -126,10 +130,10 @@ public class SearchActivity extends AppCompatActivity {
                         Log.d(TAG, "onDataChange: found user : " + user.getUsername());
 
                         userList.add(user);
-
-                        setupUserListAdapter();
                     }
                 }
+
+                setupUserListAdapter();
             }
 
             @Override

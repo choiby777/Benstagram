@@ -12,6 +12,14 @@ import android.widget.TextView;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.User;
+import com.cby.benstagram.models.UserAccountSettings;
+import com.cby.benstagram.models.UserSettings;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -62,7 +70,25 @@ public class UserListAdapter extends ArrayAdapter<User> {
         holder.tvUserName.setText(user.getUsername());
         holder.tvUserEmail.setText(user.getEmail());
 
-        //UniversalImageLoader.setImage(userSettings.getSetting().getProfile_photo() , holder.imgUser , null , "");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(user.getUser_id());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                UserAccountSettings settings = dataSnapshot.getValue(UserAccountSettings.class);
+
+                UniversalImageLoader.setImage(settings.getProfile_photo() , holder.imgUser , null , "");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         return convertView;
     }
