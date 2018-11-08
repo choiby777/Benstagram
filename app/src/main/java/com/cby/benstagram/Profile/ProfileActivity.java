@@ -21,10 +21,10 @@ import com.cby.benstagram.models.User;
 public class ProfileActivity extends AppCompatActivity implements
         ViewProfileFragment.OnGridImageSelectedListener,
         ProfileFragment.OnGridImageSelectedListener,
-        ViewPostFragment.OnCommentThreadSelectedListener{
+        ViewPostFragment.OnCommentThreadSelectedListener {
 
     private static final String TAG = "ProfileActivity";
-    private Context mContext  = ProfileActivity.this;
+    private Context mContext = ProfileActivity.this;
     private static final int ACTIVITY_NUM = 4;
     private ProgressBar mProgressBar;
     private ImageView mProfileImageView;
@@ -39,45 +39,44 @@ public class ProfileActivity extends AppCompatActivity implements
         init();
     }
 
-    private void init(){
+    private void init() {
         Log.d(TAG, "init: inflating " + R.layout.activity_profile);
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(getString(R.string.calling_activity))){
-            if (intent.hasExtra(getString(R.string.selected_user))){
+        if (intent.hasExtra(getString(R.string.calling_activity))) {
+            if (intent.hasExtra(getString(R.string.selected_user))) {
                 User user = intent.getParcelableExtra(getString(R.string.selected_user));
                 setViewProfileFragment(user);
-            }else{
-                Toast.makeText(mContext , "user info is not exit", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(mContext, "user info is not exit", Toast.LENGTH_SHORT).show();
             }
-        }
-        else {
+        } else {
             setProfileFragment();
         }
     }
 
     private void setViewProfileFragment(User user) {
         Log.d(TAG, "setViewProfileFragment: user : " + user.toString());
-        
+
         ViewProfileFragment fragment = new ViewProfileFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(getString(R.string.user) , user);
+        args.putParcelable(getString(R.string.user), user);
         fragment.setArguments(args);
 
         FragmentTransaction transaction = ProfileActivity.this.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container , fragment);
+        transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(getString(R.string.view_profile_fragment));
         transaction.commit();
     }
 
     private void setProfileFragment() {
         Log.d(TAG, "setProfileFragment: start");
-        
+
         ProfileFragment fragment = new ProfileFragment();
         FragmentTransaction transaction = ProfileActivity.this.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container , fragment);
+        transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(getString(R.string.profile_fragment));
         transaction.commit();
     }
@@ -88,12 +87,12 @@ public class ProfileActivity extends AppCompatActivity implements
 
         ViewPostFragment viewPostFragment = new ViewPostFragment();
         Bundle args = new Bundle();
-        args.putParcelable(getString(R.string.photo) , photo);
-        args.putInt(getString(R.string.activity_number) , activityNumber);
+        args.putParcelable(getString(R.string.photo), photo);
+        args.putInt(getString(R.string.activity_number), activityNumber);
         viewPostFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container , viewPostFragment);
+        transaction.replace(R.id.container, viewPostFragment);
         transaction.addToBackStack(getString(R.string.view_post_fragment));
         transaction.commit();
 
@@ -103,11 +102,11 @@ public class ProfileActivity extends AppCompatActivity implements
     public void OnCommentThreadSelectedListener(Photo photo) {
         ViewCommentsFragment viewCommentsFragment = new ViewCommentsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(getString(R.string.photo) , photo);
+        args.putParcelable(getString(R.string.photo), photo);
         viewCommentsFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container , viewCommentsFragment);
+        transaction.replace(R.id.container, viewCommentsFragment);
         transaction.addToBackStack(getString(R.string.view_post_fragment));
         transaction.commit();
     }
