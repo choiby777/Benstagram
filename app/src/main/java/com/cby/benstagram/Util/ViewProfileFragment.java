@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -27,8 +28,11 @@ import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
 import com.cby.benstagram.models.UserSettings;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,20 +61,24 @@ public class ViewProfileFragment extends Fragment
 
     OnGridImageSelectedListener mOnGridImageSelectedListener;
 
+    // Widgets
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mWebSite, mDescription;
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private GridView gridView;
     private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
+    private Button btnFollow;
 
-    private Context mContext;
-
+    // Firebase
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDbReference;
     private FirebaseHelper mFirebaseHelper;
 
+    // Vars
     private User mUser;
+    private Context mContext;
+    private boolean mIsFollowing;
 
     @Nullable
     @Override
@@ -93,6 +101,8 @@ public class ViewProfileFragment extends Fragment
         gridView = view.findViewById(R.id.gridImages);
         toolbar = view.findViewById(R.id.profileToolbar);
         bottomNavigationView= view.findViewById(R.id.bottomNavViewBar);
+        btnFollow = view.findViewById(R.id.btnFollow);
+        btnFollow.setOnClickListener(this);
 
         setupBottomNavigationView();
         setupFirebaseAuth();
@@ -100,7 +110,84 @@ public class ViewProfileFragment extends Fragment
         setProfileWidgets();
         setupGridView();
 
+        updateFollowingStatus();
+        
+        mDbReference.child(getString(R.string.dbname_followers))
+                .child(mUser.getUser_id())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        long count = dataSnapshot.getChildrenCount();
+                        mFollowers.setText(String.format("%d", count));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+        mDbReference.child(getString(R.string.dbname_following))
+                .child(mUser.getUser_id())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        long count = dataSnapshot.getChildrenCount();
+                        mFollowing.setText(String.format("%d", count));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+        mDbReference.child(getString(R.string.dbname_user_photos))
+                .child(mUser.getUser_id())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        long count = dataSnapshot.getChildrenCount();
+                        mPosts.setText(String.format("%d", count));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
         return view;
+    }
+
+    private void updateFollowingStatus() {
+
+        String curUserId = FirebaseAuth.getInstance().getUid();
+
+        Query query = mDbReference.child(getString(R.string.dbname_following))
+                .child(curUserId)
+                .orderByChild(getString(R.string.field_user_id))
+                .equalTo(mUser.getUser_id());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                mIsFollowing = dataSnapshot.hasChildren();
+
+                if (!mIsFollowing){
+                    btnFollow.setText("Unfollow");
+                }else{
+                    btnFollow.setText("Follow");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private User getUserFromBundle() {
@@ -287,7 +374,48 @@ public class ViewProfileFragment extends Fragment
             intent.putExtra(getString(R.string.calling_activity) , getString(R.string.profile_activity));
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.fade_in , R.anim.fade_out);
+        }else if (view.getId() == R.id.btnFollow){
+
+            if (mIsFollowing){
+                UnFollowUser();
+            }else {
+                FollowUser();
+            }
         }
+    }
+
+    private void FollowUser() {
+        String curUserId = FirebaseAuth.getInstance().getUid();
+
+        mDbReference.child(getString(R.string.dbname_followers))
+                .child(mUser.getUser_id())
+                .child(curUserId)
+                .child(getString(R.string.field_user_id))
+                .setValue(curUserId);
+
+        mDbReference.child(getString(R.string.dbname_following))
+                .child(curUserId)
+                .child(mUser.getUser_id())
+                .child(getString(R.string.field_user_id))
+                .setValue(mUser.getUser_id());
+
+        updateFollowingStatus();
+    }
+
+    private void UnFollowUser() {
+        String curUserId = FirebaseAuth.getInstance().getUid();
+
+        mDbReference.child(getString(R.string.dbname_followers))
+                .child(mUser.getUser_id())
+                .child(curUserId)
+                .removeValue();
+
+        mDbReference.child(getString(R.string.dbname_following))
+                .child(curUserId)
+                .child(mUser.getUser_id())
+                .removeValue();
+
+        updateFollowingStatus();
     }
 
     @Override
