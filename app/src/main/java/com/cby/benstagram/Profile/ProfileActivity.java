@@ -19,6 +19,7 @@ import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 
 public class ProfileActivity extends AppCompatActivity implements
+        ViewProfileFragment.OnGridImageSelectedListener,
         ProfileFragment.OnGridImageSelectedListener,
         ViewPostFragment.OnCommentThreadSelectedListener{
 
