@@ -105,9 +105,11 @@ public class MainFeedListAdapter extends ArrayAdapter<Photo> implements View.OnC
 
         Photo photo = getItem(position);
 
+        UniversalImageLoader.setImage(photo.getImage_path() , holder.imageViewPhoto , null , "");
+
         //holder.txtTags.setText(photo.getTags());
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        //DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 //        Query query = reference
 //                .child(mContext.getString(R.string.dbname_user_account_settings))
 //                .child(user.getUser_id());

@@ -1,5 +1,8 @@
 package com.cby.benstagram.Home;
 
+import android.content.Context;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,16 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.Util.MainFeedListAdapter;
+import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -35,6 +47,7 @@ public class HomeFragment extends Fragment {
     // vars
     private List<Photo> mainFeedList;
     private MainFeedListAdapter mainFeedListAdapter;
+    private Context mContext;
 
     @Nullable
     @Override
@@ -44,17 +57,61 @@ public class HomeFragment extends Fragment {
 
         lvMainFeeds = view.findViewById(R.id.lvMainFeeds);
         mainFeedList = new ArrayList<>();
+        mContext = getActivity();
 
-        for (int i=0; i<10; i++){
-            mainFeedList.add(new Photo());
-            mainFeedList.add(new Photo());
-            mainFeedList.add(new Photo());
-            mainFeedList.add(new Photo());
-        }
+//        for (int i=0; i<10; i++){
+//            mainFeedList.add(new Photo());
+//            mainFeedList.add(new Photo());
+//            mainFeedList.add(new Photo());
+//            mainFeedList.add(new Photo());
+//        }
 
         setupFirebaseAuth();
 
-        setupMainFeedListAdapter();
+        Query query = mDbReference.child(mContext.getString(R.string.dbname_photos))
+                .orderByChild(mContext.getString(R.string.field_date_created));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                mainFeedList.clear();
+
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+
+                    Photo photo = new Photo();
+                    Map<String , Object> objectMap = (HashMap<String , Object>)singleSnapshot.getValue();
+                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
+                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
+                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
+                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
+
+                    List<Like> likeList = new ArrayList<Like>();
+
+                    for (DataSnapshot subSnapshot : singleSnapshot
+                            .child(getString(R.string.field_likes)).getChildren()){
+
+                        Like like = subSnapshot.getValue(Like.class);
+                        likeList.add(like);
+                    }
+
+                    photo.setLikes(likeList);
+
+                    mainFeedList.add(photo);
+                }
+
+                setupMainFeedListAdapter();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         return view;
     }
