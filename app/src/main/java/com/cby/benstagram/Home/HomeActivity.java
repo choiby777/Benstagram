@@ -13,12 +13,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.cby.benstagram.Login.LoginActivity;
+import com.cby.benstagram.Login.StartUpActivity;
 import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.UniversalImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -49,16 +53,26 @@ public class HomeActivity extends AppCompatActivity {
         if (user == null){
             Intent intent = new Intent(mContext , LoginActivity.class);
             startActivity(intent);
+        }else{
+            user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "onComplete: task isSuccessful");
+                    }else {
+                        Log.d(TAG, "onComplete: task fail");
+
+                        Intent intent = new Intent(mContext , LoginActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            });
         }
     }
 
     private void setupFirebaseAuth() {
 
         mAuth = FirebaseAuth.getInstance();
-
-        if (mAuth.getCurrentUser() != null){
-            //mAuth.signOut();
-        }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -76,14 +90,44 @@ public class HomeActivity extends AppCompatActivity {
                 // ...
             }
         };
+
+//        FirebaseUser user = mAuth.getCurrentUser();
+//
+//        if (user != null){
+//            user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+//                @Override
+//                public void onComplete(@NonNull Task<GetTokenResult> task) {
+//                    if (task.isSuccessful()){
+//                        Log.d(TAG, "onComplete: task isSuccessful");
+//                    }else {
+//                        Log.d(TAG, "onComplete: task fail");
+//                    }
+//                }
+//            });
+//        }
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mAuth.addAuthStateListener(mAuthListener);
-        checkCurrentUser(mAuth.getCurrentUser());
+        Intent intent = getIntent();
+
+        if (intent.hasExtra(getString(R.string.calling_activity)) &&
+            intent.getStringExtra(getString(R.string.calling_activity)).equals(getString(R.string.startup_activity))){
+
+            mAuth.addAuthStateListener(mAuthListener);
+            checkCurrentUser(mAuth.getCurrentUser());
+
+        }else{
+            runStartUp();
+        }
+    }
+
+    private void runStartUp() {
+        Intent intent = new Intent(mContext , StartUpActivity.class);
+        startActivity(intent);
     }
 
     @Override
