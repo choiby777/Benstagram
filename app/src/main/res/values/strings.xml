@@ -53,6 +53,7 @@
     <string name="selected_bitmap">selected_bitmap</string>
     <string name="return_to_fragment">return_to_fragment</string>
     <string name="selected_user">selected_user</string>
+    <string name="is_user_valid">is_user_valid</string>
 
     <!--Bundle arg names-->
     <string name="activity_number">activity_number</string>

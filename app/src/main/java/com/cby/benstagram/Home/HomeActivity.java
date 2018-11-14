@@ -31,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private Context mContext  = HomeActivity.this;
     private static final int ACTIVITY_NUM = 0;
+    private static final int STARTUP_REQUEST_CODE = 10;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -45,6 +46,7 @@ public class HomeActivity extends AppCompatActivity {
         initImageLoader();
         setupBottomNavigationView();
         setupViewPager();
+        runStartUp();
     }
 
     private void checkCurrentUser(FirebaseUser user){
@@ -90,44 +92,44 @@ public class HomeActivity extends AppCompatActivity {
                 // ...
             }
         };
-
-//        FirebaseUser user = mAuth.getCurrentUser();
-//
-//        if (user != null){
-//            user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-//                @Override
-//                public void onComplete(@NonNull Task<GetTokenResult> task) {
-//                    if (task.isSuccessful()){
-//                        Log.d(TAG, "onComplete: task isSuccessful");
-//                    }else {
-//                        Log.d(TAG, "onComplete: task fail");
-//                    }
-//                }
-//            });
-//        }
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        Intent intent = getIntent();
-
-        if (intent.hasExtra(getString(R.string.calling_activity)) &&
-            intent.getStringExtra(getString(R.string.calling_activity)).equals(getString(R.string.startup_activity))){
-
-            mAuth.addAuthStateListener(mAuthListener);
-            checkCurrentUser(mAuth.getCurrentUser());
-
-        }else{
-            runStartUp();
-        }
+//        Intent intent = getIntent();
+//
+//        if (intent.hasExtra(getString(R.string.calling_activity)) &&
+//            intent.getStringExtra(getString(R.string.calling_activity)).equals(getString(R.string.startup_activity))){
+//
+//            mAuth.addAuthStateListener(mAuthListener);
+//            checkCurrentUser(mAuth.getCurrentUser());
+//
+//        }else{
+//            runStartUp();
+//        }
     }
 
     private void runStartUp() {
         Intent intent = new Intent(mContext , StartUpActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent , STARTUP_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK){
+            if (requestCode == STARTUP_REQUEST_CODE){
+                boolean isUserValid = data.getBooleanExtra(getString(R.string.is_user_valid), false);
+
+                if (!isUserValid){
+                    Intent intent = new Intent(mContext , LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
     @Override
