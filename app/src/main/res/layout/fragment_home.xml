@@ -4,8 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/rel1"
+        android:layout_toRightOf="@id/relLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/layout_mainfeed_recommend_item" />
+
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/lvMainFeeds"
+        android:layout_below="@id/rel1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

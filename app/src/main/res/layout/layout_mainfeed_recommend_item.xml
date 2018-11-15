@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp">
+
+    <RelativeLayout
+        android:id="@+id/relLayout1"
+        android:layout_centerVertical="true"
+        android:layout_width="100dp"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgProfile"
+            android:layout_centerInParent="true"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/dog"/>
+
+        <TextView
+            android:layout_below="@id/imgProfile"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="내 스토리"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_toRightOf="@id/relLayout1"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/snippet_recommend_story" />
+
+    </RelativeLayout>
+    
+
+</RelativeLayout>
