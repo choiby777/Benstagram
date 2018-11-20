@@ -4,8 +4,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@drawable/white_grey_rounded_corner_border">
+        android:layout_height="80dp"
+        android:background="@drawable/recommend_story_border">
 
         <RelativeLayout
             android:id="@+id/relLayout1"
@@ -16,26 +16,26 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img3"
-                android:layout_marginLeft="80dp"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_marginLeft="60dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="3dp"
                 android:src="@drawable/dog"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img2"
-                android:layout_marginLeft="40dp"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_marginLeft="30dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="3dp"
                 android:src="@drawable/dog"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img1"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="3dp"
                 android:src="@drawable/dog"/>
