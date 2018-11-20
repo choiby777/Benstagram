@@ -3,6 +3,7 @@ package com.cby.benstagram.Util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,6 +70,14 @@ public class MainFeedListAdapter extends ArrayAdapter<Photo> implements View.OnC
 
         final MainFeedListAdapter.ViewHolder holder;
 
+//        if (position == 1){
+//            LinearLayoutManager mLayoutManager;
+//            mLayoutManager = new LinearLayoutManager(parent.getContext());
+//            mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL); // 기본값이 VERTICAL
+//            convertView = mLayoutInflater.inflate(R.layout.layout_recommend_user_list, parent, false);
+//            return convertView;
+//        }
+
         if (convertView == null){
             convertView = mLayoutInflater.inflate(mLayoutResourceId , parent, false);
             holder = new MainFeedListAdapter.ViewHolder();
@@ -106,28 +115,6 @@ public class MainFeedListAdapter extends ArrayAdapter<Photo> implements View.OnC
         Photo photo = getItem(position);
 
         UniversalImageLoader.setImage(photo.getImage_path() , holder.imageViewPhoto , null , "");
-
-        //holder.txtTags.setText(photo.getTags());
-
-        //DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-//        Query query = reference
-//                .child(mContext.getString(R.string.dbname_user_account_settings))
-//                .child(user.getUser_id());
-
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                UserAccountSettings settings = dataSnapshot.getValue(UserAccountSettings.class);
-//
-//                UniversalImageLoader.setImage(settings.getProfile_photo() , holder.imgUser , null , "");
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
 
         return convertView;
     }
