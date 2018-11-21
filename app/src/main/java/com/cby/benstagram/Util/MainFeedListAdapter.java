@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,19 +65,35 @@ public class MainFeedListAdapter extends ArrayAdapter<Photo> implements View.OnC
         TextView txtDaysInfo;
     }
 
+    private static class ViewHolderEx{
+        TextView txtTitle;
+        TextView txtShowAll;
+        RecyclerView rvRecommendUserList;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         final MainFeedListAdapter.ViewHolder holder;
 
-//        if (position == 1){
+        if (position == 1){
 //            LinearLayoutManager mLayoutManager;
 //            mLayoutManager = new LinearLayoutManager(parent.getContext());
 //            mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL); // 기본값이 VERTICAL
 //            convertView = mLayoutInflater.inflate(R.layout.layout_recommend_user_list, parent, false);
 //            return convertView;
-//        }
+//            final MainFeedListAdapter.ViewHolderEx holder2;
+//
+//            holder2 = new MainFeedListAdapter.ViewHolderEx();
+//
+//            RecyclerView.LayoutManager layoutManager = new CustomLinearLayoutManager(parent.getContext() , LinearLayoutManager.HORIZONTAL, false);
+//            holder2.rvRecommendUserList.setLayoutManager(layoutManager);
+//            convertView = mLayoutInflater.inflate(R.layout.layout_recommend_user_list, parent, false);
+//            convertView.setTag(holder2);
+//
+//            return convertView;
+        }
 
         if (convertView == null){
             convertView = mLayoutInflater.inflate(mLayoutResourceId , parent, false);

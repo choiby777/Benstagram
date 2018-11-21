@@ -13,7 +13,62 @@ import com.cby.benstagram.R;
 
 import java.util.ArrayList;
 
-public class RecommendUserListAdapter extends RecyclerView.Adapter<RecommendUserListViewHolder>{
+public class RecommendUserListAdapter extends RecyclerView.Adapter<RecommendUserListAdapter.RecommendUserListViewHolder>{
+
+    public static class RecommendUserListViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView imgUserProfile;
+        public ImageView imgClose;
+        public TextView txtUserName;
+        public TextView txtDescription;
+        public Button btnFollow;
+
+        public RecommendUserListViewHolder(View itemView) {
+            super(itemView);
+
+            imgUserProfile = itemView.findViewById(R.id.imgUserProfile);
+            imgClose = itemView.findViewById(R.id.imgClose);
+            txtUserName = itemView.findViewById(R.id.txtUserName);
+            txtDescription = itemView.findViewById(R.id.txtDescription);
+            btnFollow = itemView.findViewById(R.id.btnFollow);
+        }
+    }
+
+    class RecmmendUserListItem {
+        private String userName;
+        private String description;
+        private String imageUrl;
+
+        public RecmmendUserListItem(String userName, String description, String imageUrl) {
+            this.userName = userName;
+            this.description = description;
+            this.imageUrl = imageUrl;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getImageUrl() {
+            return imageUrl;
+        }
+
+        public void setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+        }
+    }
 
     private ArrayList<RecmmendUserListItem> mRecmmendUserListItems;
 
@@ -43,60 +98,5 @@ public class RecommendUserListAdapter extends RecyclerView.Adapter<RecommendUser
     public int getItemCount() {
         return mRecmmendUserListItems.size();
     }
-}
 
-
-class RecommendUserListViewHolder extends RecyclerView.ViewHolder {
-
-    public ImageView imgUserProfile;
-    public ImageView imgClose;
-    public TextView txtUserName;
-    public TextView txtDescription;
-    public Button btnFollow;
-
-    public RecommendUserListViewHolder(View itemView) {
-        super(itemView);
-
-        imgUserProfile = itemView.findViewById(R.id.imgUserProfile);
-        imgClose = itemView.findViewById(R.id.imgClose);
-        txtUserName = itemView.findViewById(R.id.txtUserName);
-        txtDescription = itemView.findViewById(R.id.txtDescription);
-        btnFollow = itemView.findViewById(R.id.btnFollow);
-    }
-}
-
-class RecmmendUserListItem {
-    private String userName;
-    private String description;
-    private String imageUrl;
-
-    public RecmmendUserListItem(String userName, String description, String imageUrl) {
-        this.userName = userName;
-        this.description = description;
-        this.imageUrl = imageUrl;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }
