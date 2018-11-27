@@ -1,10 +1,8 @@
 package com.cby.benstagram.Share;
 
 import android.content.Intent;
-import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.print.PrinterId;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,7 +21,7 @@ import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FilePaths;
 import com.cby.benstagram.Util.FileSearch;
-import com.cby.benstagram.Util.GridImageAdapter;
+import com.cby.benstagram.Adapters.GridImageAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;

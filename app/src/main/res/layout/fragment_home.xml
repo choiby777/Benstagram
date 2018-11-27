@@ -18,8 +18,15 @@
         android:id="@+id/lvMainFeeds"
         android:layout_below="@id/rel1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="300dp">
 
     </ListView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvMainFeeds"
+        android:layout_below="@id/lvMainFeeds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" />
 
 </RelativeLayout>

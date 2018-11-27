@@ -1,4 +1,4 @@
-package com.cby.benstagram.Util;
+package com.cby.benstagram.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.Util.SquareImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;

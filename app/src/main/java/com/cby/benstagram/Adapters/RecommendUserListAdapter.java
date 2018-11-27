@@ -1,4 +1,4 @@
-package com.cby.benstagram.Util;
+package com.cby.benstagram.Adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

@@ -1,29 +1,22 @@
 package com.cby.benstagram.Util;
 
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AlphabetIndexer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.cby.benstagram.Adapters.CommentListAdapter;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Comment;
 import com.cby.benstagram.models.CommentUser;
-import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
@@ -36,18 +29,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 

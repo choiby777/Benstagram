@@ -1,32 +1,18 @@
-package com.cby.benstagram.Util;
+package com.cby.benstagram.Adapters;
 
-import android.app.DownloadManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cby.benstagram.R;
-import com.cby.benstagram.models.Comment;
+import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.CommentUser;
-import com.cby.benstagram.models.User;
-import com.cby.benstagram.models.UserAccountSettings;
-import com.cby.benstagram.models.UserSettings;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 

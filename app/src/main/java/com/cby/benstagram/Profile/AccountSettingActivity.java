@@ -2,7 +2,6 @@ package com.cby.benstagram.Profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -19,8 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
-import com.cby.benstagram.Util.FirebaseHelper;
-import com.cby.benstagram.Util.SectionStatePagerAdapter;
+import com.cby.benstagram.Adapters.SectionStatePagerAdapter;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;

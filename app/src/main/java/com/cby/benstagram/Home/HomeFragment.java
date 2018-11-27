@@ -1,25 +1,25 @@
 package com.cby.benstagram.Home;
 
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.cby.benstagram.Profile.ProfileActivity;
+import com.cby.benstagram.Adapters.MainFeedDataAdapter;
 import com.cby.benstagram.R;
-import com.cby.benstagram.Util.FirebaseHelper;
-import com.cby.benstagram.Util.MainFeedListAdapter;
+import com.cby.benstagram.Adapters.MainFeedListAdapter;
 import com.cby.benstagram.models.Like;
+import com.cby.benstagram.models.MainFeedData;
 import com.cby.benstagram.models.Photo;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
 //            mainFeedList.add(new Photo());
 //        }
 
+
         setupFirebaseAuth();
 
         Query query = mDbReference.child(mContext.getString(R.string.dbname_photos))
@@ -103,6 +104,8 @@ public class HomeFragment extends Fragment {
                 }
 
                 setupMainFeedListAdapter();
+
+                setupMainFeedDataAdapter();
             }
 
             @Override
@@ -114,6 +117,28 @@ public class HomeFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void setupMainFeedDataAdapter() {
+        RecyclerView rvMainFeeds = getActivity().findViewById(R.id.rvMainFeeds);
+
+        rvMainFeeds.setHasFixedSize(true);
+
+        ArrayList<MainFeedData> mainFeedDatas = new ArrayList<>();
+
+        for (Photo photo : mainFeedList) {
+            mainFeedDatas.add(new MainFeedData(MainFeedData.DataType.Photo , photo));
+
+            if (mainFeedDatas.size() == 1){
+                mainFeedDatas.add(new MainFeedData(MainFeedData.DataType.RecommendUsers));
+            }
+        }
+
+        MainFeedDataAdapter adapter = new MainFeedDataAdapter(getActivity(), mainFeedDatas);
+
+        rvMainFeeds.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+
+        rvMainFeeds.setAdapter(adapter);
     }
 
     private void setupFirebaseAuth() {
