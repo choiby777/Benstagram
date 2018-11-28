@@ -4,19 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/rel1"
-        android:layout_toRightOf="@id/relLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <include layout="@layout/layout_mainfeed_recommend_item" />
-
-    </RelativeLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvMainFeeds"
-        android:layout_below="@id/rel1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" />

@@ -24,23 +24,37 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public MainFeedDataAdapter(Context context, ArrayList<Photo> dataList) {
         this.dataList = dataList;
         this.mContext = context;
+
+        if (this.dataList.size() > 0){
+            // recommand story용
+            this.dataList.add(0 , new Photo());
+
+            // recommand user용
+            this.dataList.add(2 , new Photo());
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 1) return 1;
-        else return  0;
+        if (position == 0) return 0;
+        else if (position == 2) return 1;
+        else return 2;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        if (viewType == 1){
+        if (viewType == 0){
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_mainfeed_recommend_item, null);
+            RecommandStoryViewHolder mh = new RecommandStoryViewHolder(v);
+            return mh;
+        }
+        else if (viewType == 1){
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recommend_user_list, null);
             RecommendUserItemViewHolder mh = new RecommendUserItemViewHolder(v);
             return mh;
-
-        }else{
+        }
+        else{
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_mainfeed_listitem, null);
             PhotoItemViewHolder mh = new PhotoItemViewHolder(v);
             return mh;
@@ -50,8 +64,10 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder itemRowHolder, int i) {
 
-        // RecommendUserList
-        if (itemRowHolder.getItemViewType() == 1){
+        if (itemRowHolder.getItemViewType() == 0) {
+
+        }
+        else if (itemRowHolder.getItemViewType() == 1){
             RecommendUserItemViewHolder vh = (RecommendUserItemViewHolder)itemRowHolder;
 
             ArrayList<RecmmendUserInfo> mRecmmendUserListItems = new ArrayList<>();
@@ -70,7 +86,8 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             vh.recommend_user_list_View.setNestedScrollingEnabled(false);
             vh.recommend_user_list_View.addItemDecoration(new RecyclerViewDecoration(10));
 
-        }else{ // Photo
+        }
+        else{ // Photo
             PhotoItemViewHolder vh = (PhotoItemViewHolder)itemRowHolder;
 
             Photo photo = dataList.get(i);
@@ -81,6 +98,29 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemCount() {
         return (null != dataList ? dataList.size() : 0);
+    }
+
+    public class RecommandStoryViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView imgProfile;
+        ImageView img1;
+        ImageView img2;
+        ImageView img3;
+        TextView txtMyStory;
+        TextView txt1;
+        TextView txt2;
+
+        public RecommandStoryViewHolder(View view) {
+            super(view);
+
+            imgProfile = view.findViewById(R.id.imgProfile);
+            img1 = view.findViewById(R.id.img1);
+            img2 = view.findViewById(R.id.img2);
+            img3 = view.findViewById(R.id.img3);
+            txtMyStory = view.findViewById(R.id.txtMyStory);
+            txt1 = view.findViewById(R.id.txt1);
+            txt2 = view.findViewById(R.id.txt2);
+        }
     }
 
     public class PhotoItemViewHolder extends RecyclerView.ViewHolder {
