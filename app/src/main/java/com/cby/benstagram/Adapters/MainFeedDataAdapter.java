@@ -1,6 +1,7 @@
 package com.cby.benstagram.Adapters;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -67,6 +68,7 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             vh.recommend_user_list_View.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             vh.recommend_user_list_View.setAdapter(itemListDataAdapter);
             vh.recommend_user_list_View.setNestedScrollingEnabled(false);
+            vh.recommend_user_list_View.addItemDecoration(new RecyclerViewDecoration(25));
 
         }else{ // Photo
             PhotoItemViewHolder vh = (PhotoItemViewHolder)itemRowHolder;
@@ -114,6 +116,20 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             txtTags = view.findViewById(R.id.txtTags);
             txtCommentInfo = view.findViewById(R.id.txtCommentInfo);
             txtDaysInfo = view.findViewById(R.id.txtDaysInfo);
+        }
+    }
+
+    public class RecyclerViewDecoration extends RecyclerView.ItemDecoration{
+        private int divWidth;
+
+        public RecyclerViewDecoration(int divWidth){
+            this.divWidth = divWidth;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            outRect.left = divWidth;
         }
     }
 
