@@ -17,7 +17,6 @@ import com.cby.benstagram.Adapters.MainFeedDataAdapter;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Adapters.MainFeedListAdapter;
 import com.cby.benstagram.models.Like;
-import com.cby.benstagram.models.MainFeedData;
 import com.cby.benstagram.models.Photo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -45,7 +44,7 @@ public class HomeFragment extends Fragment {
     private DatabaseReference mDbReference;
 
     // vars
-    private List<Photo> mainFeedList;
+    private ArrayList<Photo> mainFeedList;
     private MainFeedListAdapter mainFeedListAdapter;
     private Context mContext;
 
@@ -124,17 +123,9 @@ public class HomeFragment extends Fragment {
 
         rvMainFeeds.setHasFixedSize(true);
 
-        ArrayList<MainFeedData> mainFeedDatas = new ArrayList<>();
+        ArrayList<Photo> mainFeedDatas = new ArrayList<>();
 
-        for (Photo photo : mainFeedList) {
-            mainFeedDatas.add(new MainFeedData(MainFeedData.DataType.Photo , photo));
-
-            if (mainFeedDatas.size() == 1){
-                mainFeedDatas.add(new MainFeedData(MainFeedData.DataType.RecommendUsers));
-            }
-        }
-
-        MainFeedDataAdapter adapter = new MainFeedDataAdapter(getActivity(), mainFeedDatas);
+        MainFeedDataAdapter adapter = new MainFeedDataAdapter(getActivity(), mainFeedList);
 
         rvMainFeeds.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 

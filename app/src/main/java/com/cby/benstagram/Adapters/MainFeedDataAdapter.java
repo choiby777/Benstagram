@@ -10,41 +10,70 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
-import com.cby.benstagram.models.MainFeedData;
+import com.cby.benstagram.Util.UniversalImageLoader;
+import com.cby.benstagram.models.Photo;
+import com.cby.benstagram.models.RecmmendUserInfo;
 
 import java.util.ArrayList;
 
-public class MainFeedDataAdapter extends RecyclerView.Adapter<MainFeedDataAdapter.ItemRowHolder>{
-    private ArrayList<MainFeedData> dataList;
+public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    private ArrayList<Photo> dataList;
     private Context mContext;
 
-    public MainFeedDataAdapter(Context context, ArrayList<MainFeedData> dataList) {
+    public MainFeedDataAdapter(Context context, ArrayList<Photo> dataList) {
         this.dataList = dataList;
         this.mContext = context;
     }
 
     @Override
-    public ItemRowHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, null);
-        ItemRowHolder mh = new ItemRowHolder(v);
-        return mh;
+    public int getItemViewType(int position) {
+        if (position == 1) return 1;
+        else return  0;
     }
 
     @Override
-    public void onBindViewHolder(ItemRowHolder itemRowHolder, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        final String sectionName = dataList.get(i).getHeaderTitle();
+        if (viewType == 1){
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recommend_user_list, null);
+            RecommendUserItemViewHolder mh = new RecommendUserItemViewHolder(v);
+            return mh;
 
-        ArrayList singleSectionItems = dataList.get(i).getAllItemsInSection();
+        }else{
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_mainfeed_listitem, null);
+            PhotoItemViewHolder mh = new PhotoItemViewHolder(v);
+            return mh;
+        }
+    }
 
-        SectionListDataAdapter itemListDataAdapter = new SectionListDataAdapter(mContext, singleSectionItems);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder itemRowHolder, int i) {
 
-        itemRowHolder.recycler_view_list.setHasFixedSize(true);
-        itemRowHolder.recycler_view_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-        itemRowHolder.recycler_view_list.setAdapter(itemListDataAdapter);
+        // RecommendUserList
+        if (itemRowHolder.getItemViewType() == 1){
+            RecommendUserItemViewHolder vh = (RecommendUserItemViewHolder)itemRowHolder;
 
+            ArrayList<RecmmendUserInfo> mRecmmendUserListItems = new ArrayList<>();
+            mRecmmendUserListItems.add(new RecmmendUserInfo("1111111" , "ssss" , "ffffffffff"));
+            mRecmmendUserListItems.add(new RecmmendUserInfo("22222" , "ssss" , "ffffffffff"));
+            mRecmmendUserListItems.add(new RecmmendUserInfo("333333" , "ssss" , "ffffffffff"));
+            mRecmmendUserListItems.add(new RecmmendUserInfo("4444444" , "ssss" , "ffffffffff"));
+            mRecmmendUserListItems.add(new RecmmendUserInfo("555555" , "ssss" , "ffffffffff"));
+            mRecmmendUserListItems.add(new RecmmendUserInfo("6666666" , "ssss" , "ffffffffff"));
 
-        itemRowHolder.recycler_view_list.setNestedScrollingEnabled(false);
+            RecommendUserListAdapter itemListDataAdapter = new RecommendUserListAdapter(mContext, mRecmmendUserListItems);
+
+            vh.recommend_user_list_View.setHasFixedSize(true);
+            vh.recommend_user_list_View.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            vh.recommend_user_list_View.setAdapter(itemListDataAdapter);
+            vh.recommend_user_list_View.setNestedScrollingEnabled(false);
+
+        }else{ // Photo
+            PhotoItemViewHolder vh = (PhotoItemViewHolder)itemRowHolder;
+
+            Photo photo = dataList.get(i);
+            UniversalImageLoader.setImage(photo.getImage_path() , vh.imageViewPhoto , null , "");
+        }
     }
 
     @Override
@@ -52,7 +81,7 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<MainFeedDataAdapte
         return (null != dataList ? dataList.size() : 0);
     }
 
-    public class ItemRowHolderForPhoto extends RecyclerView.ViewHolder {
+    public class PhotoItemViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgUserProfile;
         ImageView imgMoreMenu;
@@ -69,7 +98,7 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<MainFeedDataAdapte
         TextView txtCommentInfo;
         TextView txtDaysInfo;
 
-        public ItemRowHolderForPhoto(View view) {
+        public PhotoItemViewHolder(View view) {
             super(view);
 
             imgUserProfile = view.findViewById(R.id.imgUserProfile);
@@ -88,13 +117,13 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<MainFeedDataAdapte
         }
     }
 
-    public class ItemRowHolderForRecommendUsers extends RecyclerView.ViewHolder {
+    public class RecommendUserItemViewHolder extends RecyclerView.ViewHolder {
 
         protected RecyclerView recommend_user_list_View;
-        public ItemRowHolderForRecommendUsers(View view) {
+        public RecommendUserItemViewHolder(View view) {
             super(view);
 
-            this.recommend_user_list_View = (RecyclerView) view.findViewById(R.id.recycler_view_list);
+            this.recommend_user_list_View = (RecyclerView) view.findViewById(R.id.rvRecommendUserList);
         }
     }
 
