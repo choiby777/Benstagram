@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
 
     // Widgets
-    private ListView lvMainFeeds;
+    private RecyclerView rvMainFeeds;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -54,7 +54,8 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        lvMainFeeds = view.findViewById(R.id.lvMainFeeds);
+        rvMainFeeds = view.findViewById(R.id.rvMainFeeds);
+
         mainFeedList = new ArrayList<>();
         mContext = getActivity();
 
@@ -102,8 +103,6 @@ public class HomeFragment extends Fragment {
                     mainFeedList.add(photo);
                 }
 
-                setupMainFeedListAdapter();
-
                 setupMainFeedDataAdapter();
             }
 
@@ -119,16 +118,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupMainFeedDataAdapter() {
-        RecyclerView rvMainFeeds = getActivity().findViewById(R.id.rvMainFeeds);
-
-        rvMainFeeds.setHasFixedSize(true);
-
-        ArrayList<Photo> mainFeedDatas = new ArrayList<>();
 
         MainFeedDataAdapter adapter = new MainFeedDataAdapter(getActivity(), mainFeedList);
 
+        rvMainFeeds.setHasFixedSize(true);
         rvMainFeeds.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
         rvMainFeeds.setAdapter(adapter);
     }
 
@@ -138,10 +132,5 @@ public class HomeFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDbReference = mFirebaseDatabase.getReference();
-    }
-
-    private void setupMainFeedListAdapter() {
-        mainFeedListAdapter = new MainFeedListAdapter(getActivity() , R.layout.layout_mainfeed_listitem, mainFeedList);
-        lvMainFeeds.setAdapter(mainFeedListAdapter);
     }
 }

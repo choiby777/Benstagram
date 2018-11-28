@@ -68,7 +68,7 @@ public class MainFeedDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             vh.recommend_user_list_View.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             vh.recommend_user_list_View.setAdapter(itemListDataAdapter);
             vh.recommend_user_list_View.setNestedScrollingEnabled(false);
-            vh.recommend_user_list_View.addItemDecoration(new RecyclerViewDecoration(25));
+            vh.recommend_user_list_View.addItemDecoration(new RecyclerViewDecoration(10));
 
         }else{ // Photo
             PhotoItemViewHolder vh = (PhotoItemViewHolder)itemRowHolder;
