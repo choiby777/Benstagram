@@ -13,6 +13,8 @@ public class FileSearch {
         File file = new File(directory);
         File[] files = file.listFiles();
 
+        if (files == null) return pathArray;
+
         for (int i=0; i<files.length; i++){
             if (files[i].isDirectory()){
                 pathArray.add(files[i].getAbsolutePath());
