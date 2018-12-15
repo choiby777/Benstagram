@@ -112,8 +112,20 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void runStartUp() {
-        Intent intent = new Intent(mContext , StartUpActivity.class);
-        startActivityForResult(intent , STARTUP_REQUEST_CODE);
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        // login 사용자 정보가 없으면 Login Activity 실행
+         if (user == null){
+            Intent intent = new Intent(mContext , LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else{
+             //mAuth.signOut();
+        }
+
+        //Intent intent = new Intent(mContext , StartUpActivity.class);
+        //startActivityForResult(intent , STARTUP_REQUEST_CODE);
     }
 
     @Override
