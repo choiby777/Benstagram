@@ -176,7 +176,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
-        String email = account.getEmail();
+        //String email = account.getEmail();
 
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);

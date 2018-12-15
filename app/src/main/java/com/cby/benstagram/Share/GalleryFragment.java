@@ -1,9 +1,11 @@
 package com.cby.benstagram.Share;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -133,7 +135,9 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         GridImageAdapter adapter = new GridImageAdapter(getActivity() , R.layout.layout_grid_imageview, mAppend, imgURLs);
         gridView.setAdapter(adapter);
 
-        mSelectedImagePath = imgURLs.get(0);
+        if (imgURLs.size() > 0){
+            mSelectedImagePath = imgURLs.get(0);
+        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

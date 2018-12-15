@@ -27,6 +27,8 @@ public class FileSearch {
         File file = new File(directory);
         File[] files = file.listFiles();
 
+        if (files == null) return pathArray;
+
         Arrays.sort(files , new ModifiedDate());
 
         for (int i=0; i<files.length; i++){

@@ -36,7 +36,7 @@ public class ShareActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: starting");
 
         if (checkPermissionsArray(Permissions.PERMISSIONS)){
-
+            Log.d(TAG, "onCreate: permission is valid");
         }else{
             verifyPermission(Permissions.PERMISSIONS);
         }
