@@ -171,7 +171,7 @@ public class RegisterActivity extends AppCompatActivity
                 String mUserName = "";
                 mUserName = userName + append;
 
-                mFirebaseHelper.addNewUser(email , mUserName , "Test User", "https://www.naver.com/", "none");
+                mFirebaseHelper.addNewUser(email , mUserName , "Test User", "https://www.naver.com/", "none", "");
 
                 mAuth.signOut();
 

@@ -27,12 +27,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -247,21 +250,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            String userEmail = user.getEmail();
 
-                            mFirebaseHelper.addNewUser(
-                                    user.getEmail() ,
-                                    user.getDisplayName(),
-                                    "aaaaaa" , "www.google.com" , "");
 
-                            mProgressBar.setVisibility(View.GONE);
+                            // 현재의 Token값을 가져온다.
+                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(LoginActivity.this,  new OnSuccessListener<InstanceIdResult>() {
+                                @Override
+                                public void onSuccess(InstanceIdResult instanceIdResult) {
+                                    String newToken = instanceIdResult.getToken();
+                                    Log.d(TAG, "onSuccess: newToken : " + newToken);
 
-                            Intent intent = new Intent(mContext , HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String userEmail = user.getEmail();
+
+                                    mFirebaseHelper.addNewUser(
+                                            user.getEmail() ,
+                                            user.getDisplayName(),
+                                            "aaaaaa" ,
+                                            "www.google.com" ,
+                                            "",
+                                            newToken);
+
+                                    mProgressBar.setVisibility(View.GONE);
+
+                                    Intent intent = new Intent(mContext , HomeActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
 
                         } else {
                             // If sign in fails, display a message to the user.

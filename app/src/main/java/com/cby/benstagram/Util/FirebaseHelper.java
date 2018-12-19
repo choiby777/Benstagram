@@ -130,13 +130,19 @@ public class FirebaseHelper {
         }
     }
 
-    public void addNewUser(String email , String username, String description , String website , String profile_photo){
+    public void addNewUser(
+            String email ,
+            String username,
+            String description ,
+            String website ,
+            String profile_photo,
+            String token){
 
         if (mUserId == null){
             mUserId = mAuth.getCurrentUser().getUid();
         }
 
-        User user = new User(mUserId , "010-1111-2222" , email , StringManipulation.condenseUsername(username));
+        User user = new User(mUserId , "010-1111-2222" , email , StringManipulation.condenseUsername(username), token);
 
         mDatabaseReference.child(mContext.getString(R.string.dbname_users))
                 .child(mUserId)
