@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cby.benstagram.Adapters.GridImageAdapter;
+import com.cby.benstagram.Message.MessageActivity;
 import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.Like;
@@ -65,6 +66,7 @@ public class ViewProfileFragment extends Fragment
     private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private Button btnFollow;
+    private Button btnMessage;
 
     // Firebase
     private FirebaseDatabase mFirebaseDatabase;
@@ -98,7 +100,9 @@ public class ViewProfileFragment extends Fragment
         toolbar = view.findViewById(R.id.profileToolbar);
         bottomNavigationView= view.findViewById(R.id.bottomNavViewBar);
         btnFollow = view.findViewById(R.id.btnFollow);
+        btnMessage = view.findViewById(R.id.btnMessage);
         btnFollow.setOnClickListener(this);
+        btnMessage.setOnClickListener(this);
 
         setupBottomNavigationView();
         setupFirebaseAuth();
@@ -377,7 +381,16 @@ public class ViewProfileFragment extends Fragment
             }else {
                 FollowUser();
             }
+        }else if (view.getId() == R.id.btnMessage){
+            startMessageActivity();
         }
+    }
+
+    private void startMessageActivity() {
+        Log.d(TAG, "startMessageActivity: start");
+
+        Intent intent = new Intent(mContext , MessageActivity.class);
+        startActivity(intent);
     }
 
     private void FollowUser() {

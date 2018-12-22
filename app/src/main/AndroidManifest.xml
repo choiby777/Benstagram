@@ -30,6 +30,7 @@
         <activity android:name=".Login.LoginActivity"/>
         <activity android:name=".Login.RegisterActivity"/>
         <activity android:name=".Login.StartUpActivity"/>
+        <activity android:name=".Message.MessageActivity"/>
 
         <service android:name=".Services.MessagingService">
             <intent-filter>

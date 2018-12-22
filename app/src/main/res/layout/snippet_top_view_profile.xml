@@ -77,26 +77,51 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtFollowingValue" />
 
-        <Button
-            android:id="@+id/btnFollow"
-            android:textAllCaps="false"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/blue_rounded_corner_button"
-            android:text="Follow"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="20sp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtFollowers"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0">
+
+            <Button
+                android:id="@+id/btnFollow"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:textAllCaps="false"
+                android:layout_width="110dp"
+                android:layout_height="34dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/blue_rounded_corner_button"
+                android:text="Follow"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                />
+
+            <Button
+                android:id="@+id/btnMessage"
+                android:textAllCaps="false"
+                android:layout_width="110dp"
+                android:layout_height="34dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/blue_rounded_corner_button"
+                android:text="Message"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                />
+
+        </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
-
 </merge>
