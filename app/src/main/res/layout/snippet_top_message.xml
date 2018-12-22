@@ -22,12 +22,12 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:layout_centerVertical="true"
-                    android:id="@+id/backArrow"
+                    android:id="@+id/imgBackArrow"
                     android:src="@drawable/ic_back"
                     />
 
                 <TextView
-                    android:layout_toRightOf="@id/backArrow"
+                    android:layout_toRightOf="@id/imgBackArrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -35,7 +35,7 @@
                     android:textSize="20sp"
                     android:textColor="@color/black"
                     android:layout_marginStart="5dp"
-                    android:id="@+id/profileName"
+                    android:id="@+id/txtUserName"
                     />
 
                 <ImageView
