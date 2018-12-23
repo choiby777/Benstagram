@@ -308,53 +308,11 @@ public class ProfileFragment extends Fragment
 
         if (view.getId() == R.id.txtEditProfile){
 
-            messageSendTest();
-            return;
-
-//            Intent intent = new Intent(mContext , AccountSettingActivity.class);
-//            intent.putExtra(getString(R.string.calling_activity) , getString(R.string.profile_activity));
-//            startActivity(intent);
-//            getActivity().overridePendingTransition(R.anim.fade_in , R.anim.fade_out);
+            Intent intent = new Intent(mContext , AccountSettingActivity.class);
+            intent.putExtra(getString(R.string.calling_activity) , getString(R.string.profile_activity));
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.fade_in , R.anim.fade_out);
         }
-    }
-
-    private static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-    private static final String SERVER_KEY = "AAAA1fbjQME:APA91bHx9zRGPfMC7soGkW0iuQmLJ05Zp6s4BvQE5VkZFNUDfJQwXIyWrCCl2F9Mlvp9_TGMW-Cwu_rdjENEKmZuZLINDU0di2bOVEpVNNDCRoYy9Pr0Zgt7INilXZISVLGYtDAZOpgG8AG1QmJAnJ2h2F6Gn0RTaw";
-
-    private void messageSendTest() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String userToken = "fT3GpcEGJIc:APA91bG5kPHATjVZoYmNUkGMTHbJrzypD0TFo_Blv2N-cjnq9vR6tcMCGFNmTy0YJLWWdaVJmTOa7oVHaYo_AR9-p4x_ngtgxaSZDLXUEu-56YsEVTyspJ5NIPRv9B36oJjazCNg_Kg4";
-
-                    // FMC 메시지 생성 start
-                    JSONObject root = new JSONObject();
-                    JSONObject notification = new JSONObject();
-                    notification.put("body", "안녕하세요!!!");
-                    notification.put("title", getString(R.string.app_name));
-                    root.put("notification", notification);
-                    root.put("to", userToken);
-                    // FMC 메시지 생성 end
-
-                    URL Url = new URL(FCM_MESSAGE_URL);
-                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-                    conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setRequestProperty("Content-type", "application/json");
-                    OutputStream os = conn.getOutputStream();
-                    os.write(root.toString().getBytes("utf-8"));
-                    os.flush();
-                    conn.getResponseCode();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
 
