@@ -90,9 +90,8 @@
 
             <Button
                 android:id="@+id/btnFollow"
-                android:layout_gravity="center_vertical|center_horizontal"
                 android:textAllCaps="false"
-                android:layout_width="110dp"
+                android:layout_width="80dp"
                 android:layout_height="34dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
@@ -102,13 +101,13 @@
                 android:text="Follow"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 />
 
             <Button
                 android:id="@+id/btnMessage"
                 android:textAllCaps="false"
-                android:layout_width="110dp"
+                android:layout_width="80dp"
                 android:layout_height="34dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
@@ -118,7 +117,7 @@
                 android:text="Message"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 />
 
         </LinearLayout>
