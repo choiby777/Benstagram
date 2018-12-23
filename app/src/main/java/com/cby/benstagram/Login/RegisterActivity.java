@@ -1,6 +1,7 @@
 package com.cby.benstagram.Login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,9 +13,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.cby.benstagram.Home.HomeActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.FirebaseHelper;
 import com.cby.benstagram.models.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class RegisterActivity extends AppCompatActivity
         implements View.OnClickListener , FirebaseAuth.AuthStateListener{
@@ -168,13 +173,20 @@ public class RegisterActivity extends AppCompatActivity
                     }
                 }
 
-                String mUserName = "";
-                mUserName = userName + append;
+                final String mUserName = userName + append;
 
-                mFirebaseHelper.addNewUser(email , mUserName , "Test User", "https://www.naver.com/", "none", "");
+                // 현재의 Token값을 가져온다.
+                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(RegisterActivity.this,  new OnSuccessListener<InstanceIdResult>() {
+                    @Override
+                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                        String newToken = instanceIdResult.getToken();
+                        Log.d(TAG, "onSuccess: newToken : " + newToken);
 
-                mAuth.signOut();
+                        mFirebaseHelper.addNewUser(email , mUserName, "Test User", "https://www.naver.com/", "none", newToken);
 
+                        mAuth.signOut();
+                    }
+                });
             }
 
             @Override

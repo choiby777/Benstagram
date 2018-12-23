@@ -390,6 +390,7 @@ public class ViewProfileFragment extends Fragment
         Log.d(TAG, "startMessageActivity: start");
 
         Intent intent = new Intent(mContext , MessageActivity.class);
+        intent.putExtra(getString(R.string.selected_user) , mUser);
         startActivity(intent);
     }
 
