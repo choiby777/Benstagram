@@ -21,10 +21,9 @@ import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.BottomNavigationViewHelper;
 import com.cby.benstagram.Util.FirebaseHelper;
-import com.cby.benstagram.Util.UserListAdapter;
+import com.cby.benstagram.Adapters.UserListAdapter;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
-import com.cby.benstagram.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +36,6 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
 

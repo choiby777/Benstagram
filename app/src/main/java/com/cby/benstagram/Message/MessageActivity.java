@@ -92,6 +92,23 @@ public class MessageActivity extends AppCompatActivity {
                 .child(messageId)
                 .setValue(chatMessage);
 
+        mDbReference.child(getString(R.string.dbname_chatting_rooms))
+                .child(chattingRoomKey)
+                .child(getString(R.string.field_last_message))
+                .setValue(message);
+
+        mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
+                .child(sendUserId)
+                .child(chattingRoomKey)
+                .child(getString(R.string.field_last_message))
+                .setValue(message);
+
+        mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
+                .child(targetUser.getUser_id())
+                .child(chattingRoomKey)
+                .child(getString(R.string.field_last_message))
+                .setValue(message);
+
         String userToken = targetUser.getToken();
 
         sendMessageToUser(userToken, message);

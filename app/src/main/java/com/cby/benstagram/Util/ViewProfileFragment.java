@@ -24,6 +24,7 @@ import com.cby.benstagram.Adapters.GridImageAdapter;
 import com.cby.benstagram.Message.MessageActivity;
 import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.ChatRoom;
 import com.cby.benstagram.models.Comment;
 import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
@@ -411,57 +412,57 @@ public class ViewProfileFragment extends Fragment
                       // chattingRoom id들을 가져와서
                       for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                          List<String> chatUserIds = new ArrayList<>();
-                          for (DataSnapshot ds : postSnapshot.getChildren()) {
-                              String chatUserId = ds.getKey();
-                              chatUserIds.add(chatUserId);
-                          }
+                          ChatRoom chatRoom = postSnapshot.getValue(ChatRoom.class);
 
                           // 해당 유저와의 대화방이 있는경우 해당 대화방 키를 사용
-                          if (chatUserIds.size() == 2 && chatUserIds.contains(mUser.getUser_id())){
-                              chattingRoomKey = postSnapshot.getKey();
+                          if (chatRoom.getUserIds().size() == 2 &&
+                                  chatRoom.getUserIds().containsKey(mUser.getUser_id())){
+
+                              chattingRoomKey = chatRoom.getRoomId();
 
                               Log.d(TAG, "onDataChange: roomKey : " + chattingRoomKey);
-                          }else{
-                              // chatting_room 생성
-                              createChattingRoom(userId , mUser.getUser_id());
+
+                              break;
                           }
                       }
+                  }
 
-                  } else {
+                  if (chattingRoomKey == null){
                       // chatting_room 생성
-                      createChattingRoom(userId , mUser.getUser_id());
+                      chattingRoomKey = mDbReference.push().getKey();
+                      createChattingRoom(chattingRoomKey);
                   }
 
-                  if (chattingRoomKey != null){
-                      Intent intent = new Intent(mContext , MessageActivity.class);
-                      intent.putExtra(getString(R.string.selected_user) , mUser);
-                      intent.putExtra(getString(R.string.chatting_room_key) , chattingRoomKey);
-                      startActivity(intent);
-                  }else{
-                      Toast.makeText(mContext , "Chatting information is not valid" , Toast.LENGTH_SHORT).show();
-                  }
+                  Intent intent = new Intent(mContext , MessageActivity.class);
+                  intent.putExtra(getString(R.string.selected_user) , mUser);
+                  intent.putExtra(getString(R.string.chatting_room_key) , chattingRoomKey);
+                  startActivity(intent);
               }
 
-            private void createChattingRoom(String userId1, String userId2) {
-                String chattingRoomKey = mDbReference.push().getKey();
+            private void createChattingRoom(String chattingRoomKey) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
                 Map<String, Boolean> userIds = new HashMap<>();
-                userIds.put(userId1, true);
-                userIds.put(userId2, true);
+                userIds.put(mUser.getUser_id(), true);
+                userIds.put(currentUser.getUid(), true);
+
+                ChatRoom chatRoom = new ChatRoom(chattingRoomKey , "", mUser.getUsername(), userIds);
 
                 mDbReference.child(getString(R.string.dbname_chatting_rooms))
                         .child(chattingRoomKey)
-                        .setValue(userIds);
+                        .setValue(chatRoom);
 
                 mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
-                        .child(userId1)
+                        .child(currentUser.getUid())
                         .child(chattingRoomKey)
-                        .setValue(userIds);
+                        .setValue(chatRoom);
+
+                chatRoom.setRoomTitle(currentUser.getDisplayName());
 
                 mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
-                        .child(userId2)
+                        .child(mUser.getUser_id())
                         .child(chattingRoomKey)
-                        .setValue(userIds);
+                        .setValue(chatRoom);
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.cby.benstagram.Util;
+package com.cby.benstagram.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.Util.UniversalImageLoader;
 import com.cby.benstagram.models.User;
 import com.cby.benstagram.models.UserAccountSettings;
-import com.cby.benstagram.models.UserSettings;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
