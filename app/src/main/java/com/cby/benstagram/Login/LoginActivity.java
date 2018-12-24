@@ -118,26 +118,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 FirebaseUser user = mAuth.getCurrentUser();
 
-                                try {
-                                    if (user.isEmailVerified()){
-                                        Log.d(TAG, "onComplete: success email verification");
+                                boolean isRequireEmailVerified = false;
 
-                                        Intent intent = new Intent(mContext , HomeActivity.class);
-                                        startActivity(intent);
+                                if (isRequireEmailVerified){
 
-                                    }else{
-                                        Log.e(TAG, "onComplete: fail email verification");
+                                    try {
+                                        if (user.isEmailVerified()){
+                                            Log.d(TAG, "onComplete: success email verification");
 
-                                        Toast.makeText(
-                                                mContext ,
-                                                "Email is not verified. Check you emal." ,
-                                                Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(mContext , HomeActivity.class);
+                                            startActivity(intent);
 
-                                        mAuth.signOut();
+                                        }else{
+                                            Log.e(TAG, "onComplete: fail email verification");
+
+                                            Toast.makeText(
+                                                    mContext ,
+                                                    "Email is not verified. Check you emal." ,
+                                                    Toast.LENGTH_SHORT).show();
+
+                                            mAuth.signOut();
+                                        }
+
+                                    }catch (NullPointerException e){
+                                        Log.e(TAG, "onComplete: NullPointerException : " + e.getMessage());
                                     }
-                                    
-                                }catch (NullPointerException e){
-                                    Log.e(TAG, "onComplete: NullPointerException : " + e.getMessage());
+
+                                }else{
+                                    Intent intent = new Intent(mContext , HomeActivity.class);
+                                    startActivity(intent);
                                 }
 
                             } else {
