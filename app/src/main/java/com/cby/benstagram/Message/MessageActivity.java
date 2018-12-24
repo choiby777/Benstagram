@@ -10,7 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.ChattingMessage;
 import com.cby.benstagram.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONObject;
 
@@ -31,6 +35,7 @@ public class MessageActivity extends AppCompatActivity {
     private Context mContext  = MessageActivity.this;
     private InputMethodManager inputMethodManager;
     private User targetUser;
+    private String chattingRoomKey;
 
     @BindView(R.id.imgBackArrow) ImageView imgBackArrow;
     @BindView(R.id.imgSearch) ImageView imgSearch;
@@ -51,6 +56,7 @@ public class MessageActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         targetUser = getIntent().getParcelableExtra(getString(R.string.selected_user));
+        chattingRoomKey = getIntent().getStringExtra(getString(R.string.chatting_room_key));
     }
 
     @OnClick(R.id.imgBackArrow)
@@ -74,6 +80,18 @@ public class MessageActivity extends AppCompatActivity {
 
         String message = txtMessage.getText().toString();
 
+        String sendUserId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference mDbReference = FirebaseDatabase.getInstance().getReference();
+
+        String messageId = mDbReference.push().getKey();
+
+        ChattingMessage chatMessage = new ChattingMessage(messageId , "Text" , message , sendUserId, chattingRoomKey);
+
+        mDbReference.child(getString(R.string.dbname_chatting_messages))
+                .child(chattingRoomKey)
+                .child(messageId)
+                .setValue(chatMessage);
+
         String userToken = targetUser.getToken();
 
         sendMessageToUser(userToken, message);
@@ -83,6 +101,8 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendMessageToUser(final String userToken , final String message) {
+
+        String sendUserId = FirebaseAuth.getInstance().getUid();
 
         new Thread(new Runnable() {
             @Override

@@ -18,11 +18,13 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cby.benstagram.Adapters.GridImageAdapter;
 import com.cby.benstagram.Message.MessageActivity;
 import com.cby.benstagram.Profile.AccountSettingActivity;
 import com.cby.benstagram.R;
+import com.cby.benstagram.models.Comment;
 import com.cby.benstagram.models.Like;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.User;
@@ -34,11 +36,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -389,9 +394,81 @@ public class ViewProfileFragment extends Fragment
     private void startMessageActivity() {
         Log.d(TAG, "startMessageActivity: start");
 
-        Intent intent = new Intent(mContext , MessageActivity.class);
-        intent.putExtra(getString(R.string.selected_user) , mUser);
-        startActivity(intent);
+        final String userId = FirebaseAuth.getInstance().getUid();
+        Query queryUserChattingRooms = mDbReference
+                .child(mContext.getString(R.string.dbname_user_chatting_rooms))
+                .child(userId);
+
+        queryUserChattingRooms.addListenerForSingleValueEvent(new ValueEventListener() {
+
+              @Override
+              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                  String chattingRoomKey = null;
+
+                  if (dataSnapshot.exists()) {
+
+                      // chattingRoom id들을 가져와서
+                      for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                          List<String> chatUserIds = new ArrayList<>();
+                          for (DataSnapshot ds : postSnapshot.getChildren()) {
+                              String chatUserId = ds.getKey();
+                              chatUserIds.add(chatUserId);
+                          }
+
+                          // 해당 유저와의 대화방이 있는경우 해당 대화방 키를 사용
+                          if (chatUserIds.size() == 2 && chatUserIds.contains(mUser.getUser_id())){
+                              chattingRoomKey = postSnapshot.getKey();
+
+                              Log.d(TAG, "onDataChange: roomKey : " + chattingRoomKey);
+                          }else{
+                              // chatting_room 생성
+                              createChattingRoom(userId , mUser.getUser_id());
+                          }
+                      }
+
+                  } else {
+                      // chatting_room 생성
+                      createChattingRoom(userId , mUser.getUser_id());
+                  }
+
+                  if (chattingRoomKey != null){
+                      Intent intent = new Intent(mContext , MessageActivity.class);
+                      intent.putExtra(getString(R.string.selected_user) , mUser);
+                      intent.putExtra(getString(R.string.chatting_room_key) , chattingRoomKey);
+                      startActivity(intent);
+                  }else{
+                      Toast.makeText(mContext , "Chatting information is not valid" , Toast.LENGTH_SHORT).show();
+                  }
+              }
+
+            private void createChattingRoom(String userId1, String userId2) {
+                String chattingRoomKey = mDbReference.push().getKey();
+                Map<String, Boolean> userIds = new HashMap<>();
+                userIds.put(userId1, true);
+                userIds.put(userId2, true);
+
+                mDbReference.child(getString(R.string.dbname_chatting_rooms))
+                        .child(chattingRoomKey)
+                        .setValue(userIds);
+
+                mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
+                        .child(userId1)
+                        .child(chattingRoomKey)
+                        .setValue(userIds);
+
+                mDbReference.child(getString(R.string.dbname_user_chatting_rooms))
+                        .child(userId2)
+                        .child(chattingRoomKey)
+                        .setValue(userIds);
+            }
+
+            @Override
+              public void onCancelled(@NonNull DatabaseError databaseError) {
+
+              }
+          });
     }
 
     private void FollowUser() {
