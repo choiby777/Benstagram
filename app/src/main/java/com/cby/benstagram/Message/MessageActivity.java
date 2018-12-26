@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cby.benstagram.R;
@@ -45,6 +46,8 @@ public class MessageActivity extends AppCompatActivity {
     @BindView(R.id.imgInputUser) ImageView imgInputUser;
     @BindView(R.id.imgSendMessage) ImageView imgSendMessage;
     @BindView(R.id.txtMessage) EditText txtMessage;
+    @BindView(R.id.listMessages) ListView listMessages;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class MessageActivity extends AppCompatActivity {
 
         targetUser = getIntent().getParcelableExtra(getString(R.string.selected_user));
         chattingRoomKey = getIntent().getStringExtra(getString(R.string.chatting_room_key));
+
+        txtUserName.setText(targetUser.getUsername());
     }
 
     @OnClick(R.id.imgBackArrow)

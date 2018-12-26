@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.cby.benstagram.Adapters.ChatRoomListAdapter;
 import com.cby.benstagram.Adapters.UserListAdapter;
+import com.cby.benstagram.Message.MessageActivity;
 import com.cby.benstagram.Profile.ProfileActivity;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.ChatRoom;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -112,10 +114,40 @@ public class MessageFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick: clicked Item position : " + position);
 
-                ChatRoom clickedChatRoom = chatRoomList.get(position);
+                final ChatRoom clickedChatRoom = chatRoomList.get(position);
 
                 Log.d(TAG, "onItemClick: clickedChatRoom : " + clickedChatRoom.toString());
 
+                String selectedUserId = null;
+
+                for (Map.Entry<String, Boolean> entry : clickedChatRoom.getUserIds().entrySet()) {
+                    String userId = entry.getKey();
+
+                    if (!userId.equals(mAuth.getUid())){
+                        selectedUserId = userId;
+                        break;
+                    }
+                }
+
+                mDbReference.child(getString(R.string.dbname_users))
+                        .child(selectedUserId)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                User user = dataSnapshot.getValue(User.class);
+
+                                Intent intent = new Intent(getActivity() , MessageActivity.class);
+                                intent.putExtra(getString(R.string.selected_user) , user);
+                                intent.putExtra(getString(R.string.chatting_room_key) , clickedChatRoom.getRoomId());
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
             }
         });
     }

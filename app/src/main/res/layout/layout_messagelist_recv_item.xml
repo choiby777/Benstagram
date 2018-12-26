@@ -1,0 +1,47 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="@color/grey"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgUser"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/dog"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/grey"
+            />
+
+        <LinearLayout
+            android:layout_toRightOf="@id/imgUser"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User.Name"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/txtLastMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:background="@drawable/rounded_corner_recv_message"
+                    android:textSize="13sp"
+                    android:text="안녕하세요.반갑습니다."
+                    android:textColor="@color/black"
+
+                    />
+        </LinearLayout>
+</RelativeLayout>
