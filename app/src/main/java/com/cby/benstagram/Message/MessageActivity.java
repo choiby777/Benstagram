@@ -2,6 +2,8 @@ package com.cby.benstagram.Message;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,11 +17,17 @@ import android.widget.TextView;
 import com.cby.benstagram.Adapters.MessageListAdapter;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.ChattingMessage;
+import com.cby.benstagram.models.Comment;
 import com.cby.benstagram.models.MessageListItem;
 import com.cby.benstagram.models.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -42,8 +50,11 @@ public class MessageActivity extends AppCompatActivity {
     private Context mContext  = MessageActivity.this;
     private InputMethodManager inputMethodManager;
     private User targetUser;
+    private User loginUser;
     private String chattingRoomKey;
     private ArrayList<MessageListItem> messageListItems;
+    private DatabaseReference mDbReference;
+    private MessageListAdapter messageListAdapter;
 
     @BindView(R.id.imgBackArrow) ImageView imgBackArrow;
     @BindView(R.id.imgSearch) ImageView imgSearch;
@@ -71,6 +82,70 @@ public class MessageActivity extends AppCompatActivity {
         txtUserName.setText(targetUser.getUsername());
 
         setupMessageListAdapter();
+
+        mDbReference = FirebaseDatabase.getInstance().getReference();
+
+        mDbReference.child(mContext.getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        loginUser = dataSnapshot.getValue(User.class);
+
+                        setupDbEvent();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void setupDbEvent() {
+
+        mDbReference.child(mContext.getString(R.string.dbname_chatting_messages))
+                .child(chattingRoomKey)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Log.d(TAG, "onChildAdded: s : " + s);
+
+                        ChattingMessage message = dataSnapshot.getValue(ChattingMessage.class);
+
+                        MessageListItem messageListItem = new MessageListItem();
+                        messageListItem.setMessageInfo(message);
+
+                        if (message.getUserId().equals(targetUser.getUser_id())) messageListItem.setUserInfo(targetUser);
+                        else messageListItem.setUserInfo(loginUser);
+
+                        messageListItems.add(messageListItem);
+
+                        messageListAdapter.notifyDataSetChanged();
+
+                        listMessages.smoothScrollToPosition(messageListItems.size() - 1);
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Log.d(TAG, "onChildChanged: s : " + s);
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     @OnClick(R.id.imgBackArrow)
@@ -173,27 +248,26 @@ public class MessageActivity extends AppCompatActivity {
 
         messageListItems = new ArrayList<>();
 
-        User curUser = new User();
-        curUser.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        curUser.setUsername("나야나");
+//        User curUser = new User();
+//        curUser.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        curUser.setUsername("나야나");
+//
+//        User user2 = new User();
+//        user2.setUser_id("sdjdfhskjdfhkjsjahjdfh");
+//        user2.setUsername("너너너");
+//
+//        messageListItems.add(new MessageListItem(new ChattingMessage("안녕하세요") , curUser));
+//        messageListItems.add(new MessageListItem(new ChattingMessage("네 안녕하세요 반갑습니다.") , user2));
+//        messageListItems.add(new MessageListItem(new ChattingMessage("성함이??") , curUser));
+//        messageListItems.add(new MessageListItem(new ChattingMessage("홍길동 입니다.") , user2));
 
-        User user2 = new User();
-        user2.setUser_id("sdjdfhskjdfhkjsjahjdfh");
-        user2.setUsername("너너너");
-
-        messageListItems.add(new MessageListItem(new ChattingMessage("안녕하세요") , curUser));
-        messageListItems.add(new MessageListItem(new ChattingMessage("네 안녕하세요 반갑습니다.") , user2));
-        messageListItems.add(new MessageListItem(new ChattingMessage("성함이??") , curUser));
-        messageListItems.add(new MessageListItem(new ChattingMessage("홍길동 입니다.") , user2));
-
-
-        MessageListAdapter adapter = new MessageListAdapter(mContext , messageListItems);
+        messageListAdapter = new MessageListAdapter(mContext , messageListItems);
 
         LinearLayoutManager linearLayoutManager =new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
 
         listMessages.setHasFixedSize(true);
         listMessages.setLayoutManager(linearLayoutManager);
-        listMessages.setAdapter(adapter);
+        listMessages.setAdapter(messageListAdapter);
     }
 }
