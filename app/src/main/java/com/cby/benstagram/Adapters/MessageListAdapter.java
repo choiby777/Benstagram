@@ -12,86 +12,63 @@ import android.widget.TextView;
 
 import com.cby.benstagram.R;
 import com.cby.benstagram.Util.UniversalImageLoader;
+import com.cby.benstagram.models.MessageListItem;
 import com.cby.benstagram.models.Photo;
 import com.cby.benstagram.models.RecmmendUserInfo;
+import com.cby.benstagram.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
 public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private ArrayList<Photo> dataList;
+    private ArrayList<MessageListItem> dataList;
     private Context mContext;
+    public static final int VIEWTYPE_SEND_MESSGE = 0;
+    public static final int VIEWTYPE_RECV_MESSGE = 1;
 
-    public MessageListAdapter(Context context, ArrayList<Photo> dataList) {
+    public MessageListAdapter(Context context, ArrayList<MessageListItem> dataList) {
         this.dataList = dataList;
         this.mContext = context;
-
-        if (this.dataList.size() > 0){
-            // recommand story용
-            this.dataList.add(0 , new Photo());
-
-            // recommand user용
-            this.dataList.add(2 , new Photo());
-        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) return 0;
-        else if (position == 2) return 1;
-        else return 2;
+        String userId = dataList.get(position).getUserInfo().getUser_id();
+        String fbUid = FirebaseAuth.getInstance().getUid();
+
+        if (userId.equals(fbUid)) return VIEWTYPE_SEND_MESSGE;
+        else return VIEWTYPE_RECV_MESSGE;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        if (viewType == 0){
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_mainfeed_recommend_item, null);
-            RecommandStoryViewHolder mh = new RecommandStoryViewHolder(v);
-            return mh;
+        if (viewType == VIEWTYPE_SEND_MESSGE){
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_messagelist_send_item, null);
+            SendMessageViewHolder sendMessageViewHolder = new SendMessageViewHolder(v);
+            return sendMessageViewHolder;
         }
-        else if (viewType == 1){
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recommend_user_list, null);
-            RecommendUserItemViewHolder mh = new RecommendUserItemViewHolder(v);
-            return mh;
-        }
-        else{
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_mainfeed_listitem, null);
-            PhotoItemViewHolder mh = new PhotoItemViewHolder(v);
-            return mh;
+        else{// if (viewType == 1){
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_messagelist_recv_item, null);
+            ReceiveMessageViewHolder receiveMessageViewHolder = new ReceiveMessageViewHolder(v);
+            return receiveMessageViewHolder;
         }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder itemRowHolder, int i) {
+    public void onBindViewHolder(RecyclerView.ViewHolder itemRowHolder, int position) {
 
-        if (itemRowHolder.getItemViewType() == 0) {
+        MessageListItem messageListItem = dataList.get(position);
 
-        }
-        else if (itemRowHolder.getItemViewType() == 1){
-            RecommendUserItemViewHolder vh = (RecommendUserItemViewHolder)itemRowHolder;
-
-            ArrayList<RecmmendUserInfo> mRecmmendUserListItems = new ArrayList<>();
-            mRecmmendUserListItems.add(new RecmmendUserInfo("1111111" , "ssss" , "ffffffffff"));
-            mRecmmendUserListItems.add(new RecmmendUserInfo("22222" , "ssss" , "ffffffffff"));
-            mRecmmendUserListItems.add(new RecmmendUserInfo("333333" , "ssss" , "ffffffffff"));
-            mRecmmendUserListItems.add(new RecmmendUserInfo("4444444" , "ssss" , "ffffffffff"));
-            mRecmmendUserListItems.add(new RecmmendUserInfo("555555" , "ssss" , "ffffffffff"));
-            mRecmmendUserListItems.add(new RecmmendUserInfo("6666666" , "ssss" , "ffffffffff"));
-
-            RecommendUserListAdapter itemListDataAdapter = new RecommendUserListAdapter(mContext, mRecmmendUserListItems);
-
-            vh.recommend_user_list_View.setHasFixedSize(true);
-            vh.recommend_user_list_View.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-            vh.recommend_user_list_View.setAdapter(itemListDataAdapter);
-            vh.recommend_user_list_View.setNestedScrollingEnabled(false);
-            vh.recommend_user_list_View.addItemDecoration(new RecyclerViewDecoration(10));
+        if (itemRowHolder.getItemViewType() == VIEWTYPE_SEND_MESSGE) {
+            SendMessageViewHolder sendMessageViewHolder = (SendMessageViewHolder)itemRowHolder;
+            sendMessageViewHolder.txtMessage.setText(messageListItem.getMessageInfo().getMessageText());
 
         }
-        else{ // Photo
-            PhotoItemViewHolder vh = (PhotoItemViewHolder)itemRowHolder;
-
-            Photo photo = dataList.get(i);
-            UniversalImageLoader.setImage(photo.getImage_path() , vh.imageViewPhoto , null , "");
+        else if (itemRowHolder.getItemViewType() == VIEWTYPE_RECV_MESSGE){
+            ReceiveMessageViewHolder receiveMessageViewHolder = (ReceiveMessageViewHolder)itemRowHolder;
+            receiveMessageViewHolder.txtMessage.setText(messageListItem.getMessageInfo().getMessageText());
         }
     }
 
@@ -100,87 +77,31 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return (null != dataList ? dataList.size() : 0);
     }
 
-    public class RecommandStoryViewHolder extends RecyclerView.ViewHolder {
-
-        ImageView imgProfile;
-        ImageView img1;
-        ImageView img2;
-        ImageView img3;
-        TextView txtMyStory;
-        TextView txt1;
-        TextView txt2;
-
-        public RecommandStoryViewHolder(View view) {
-            super(view);
-
-            imgProfile = view.findViewById(R.id.imgProfile);
-            img1 = view.findViewById(R.id.img1);
-            img2 = view.findViewById(R.id.img2);
-            img3 = view.findViewById(R.id.img3);
-            txtMyStory = view.findViewById(R.id.txtMyStory);
-            txt1 = view.findViewById(R.id.txt1);
-            txt2 = view.findViewById(R.id.txt2);
-        }
-    }
-
-    public class PhotoItemViewHolder extends RecyclerView.ViewHolder {
+    public class SendMessageViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgUserProfile;
-        ImageView imgMoreMenu;
-        ImageView imageViewPhoto;
-        ImageView imgHeartWhite;
-        ImageView imgHeartRed;
-        ImageView imgComments;
-        ImageView imageSend;
-        ImageView imageClip;
+        TextView txtMessage;
 
-        TextView txtUserName;
-        TextView txtLikedInfo;
-        TextView txtTags;
-        TextView txtCommentInfo;
-        TextView txtDaysInfo;
-
-        public PhotoItemViewHolder(View view) {
+        public SendMessageViewHolder(View view) {
             super(view);
 
-            imgUserProfile = view.findViewById(R.id.imgUserProfile);
-            imgMoreMenu = view.findViewById(R.id.imgMoreMenu);
-            imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
-            imgHeartWhite = view.findViewById(R.id.imgHeartWhite);
-            imgHeartRed = view.findViewById(R.id.imgHeartRed);
-            imgComments = view.findViewById(R.id.imgComments);
-            imageSend = view.findViewById(R.id.imageSend);
-            imageClip = view.findViewById(R.id.imageClip);
-            txtUserName = view.findViewById(R.id.txtUserName);
-            txtLikedInfo = view.findViewById(R.id.txtLikedInfo);
-            txtTags = view.findViewById(R.id.txtTags);
-            txtCommentInfo = view.findViewById(R.id.txtCommentInfo);
-            txtDaysInfo = view.findViewById(R.id.txtDaysInfo);
+            imgUserProfile = view.findViewById(R.id.imgUser);
+            txtMessage = view.findViewById(R.id.txtSendMessage);
         }
     }
 
-    public class RecyclerViewDecoration extends RecyclerView.ItemDecoration{
-        private int divWidth;
+    public class ReceiveMessageViewHolder extends RecyclerView.ViewHolder {
 
-        public RecyclerViewDecoration(int divWidth){
-            this.divWidth = divWidth;
-        }
+        ImageView imgUserProfile;
+        TextView txtMessage;
+        TextView txtSendUserName;
 
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
-            outRect.left = divWidth;
-        }
-    }
-
-    public class RecommendUserItemViewHolder extends RecyclerView.ViewHolder {
-
-        protected RecyclerView recommend_user_list_View;
-        public RecommendUserItemViewHolder(View view) {
+        public ReceiveMessageViewHolder(View view) {
             super(view);
 
-            this.recommend_user_list_View = (RecyclerView) view.findViewById(R.id.rvRecommendUserList);
+            imgUserProfile = view.findViewById(R.id.imgUser);
+            txtMessage = view.findViewById(R.id.txtReceiveMessage);
+            txtSendUserName = view.findViewById(R.id.txtUserName);
         }
     }
-
 }

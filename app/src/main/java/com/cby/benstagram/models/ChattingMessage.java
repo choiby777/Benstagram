@@ -13,6 +13,10 @@ public class ChattingMessage {
     public ChattingMessage() {
     }
 
+    public ChattingMessage(String messageText) {
+        this.messageText = messageText;
+    }
+
     public ChattingMessage(String messageId, String messageType, String messageText, String userId, String chattingRoomId) {
         this.messageId = messageId;
         this.messageType = messageType;

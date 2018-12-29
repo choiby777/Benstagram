@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.cby.benstagram.Adapters.ChatRoomListAdapter;
+import com.cby.benstagram.Adapters.MainFeedDataAdapter;
+import com.cby.benstagram.Adapters.MessageListAdapter;
 import com.cby.benstagram.Adapters.UserListAdapter;
 import com.cby.benstagram.Message.MessageActivity;
 import com.cby.benstagram.Profile.ProfileActivity;

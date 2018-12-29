@@ -3,6 +3,8 @@ package com.cby.benstagram.Message;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -10,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cby.benstagram.Adapters.MessageListAdapter;
 import com.cby.benstagram.R;
 import com.cby.benstagram.models.ChattingMessage;
+import com.cby.benstagram.models.MessageListItem;
 import com.cby.benstagram.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +26,8 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +43,7 @@ public class MessageActivity extends AppCompatActivity {
     private InputMethodManager inputMethodManager;
     private User targetUser;
     private String chattingRoomKey;
+    private ArrayList<MessageListItem> messageListItems;
 
     @BindView(R.id.imgBackArrow) ImageView imgBackArrow;
     @BindView(R.id.imgSearch) ImageView imgSearch;
@@ -46,7 +53,7 @@ public class MessageActivity extends AppCompatActivity {
     @BindView(R.id.imgInputUser) ImageView imgInputUser;
     @BindView(R.id.imgSendMessage) ImageView imgSendMessage;
     @BindView(R.id.txtMessage) EditText txtMessage;
-    @BindView(R.id.listMessages) ListView listMessages;
+    @BindView(R.id.listMessages) RecyclerView listMessages;
 
 
     @Override
@@ -62,6 +69,8 @@ public class MessageActivity extends AppCompatActivity {
         chattingRoomKey = getIntent().getStringExtra(getString(R.string.chatting_room_key));
 
         txtUserName.setText(targetUser.getUsername());
+
+        setupMessageListAdapter();
     }
 
     @OnClick(R.id.imgBackArrow)
@@ -157,5 +166,34 @@ public class MessageActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+
+    private void setupMessageListAdapter() {
+
+        messageListItems = new ArrayList<>();
+
+        User curUser = new User();
+        curUser.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        curUser.setUsername("나야나");
+
+        User user2 = new User();
+        user2.setUser_id("sdjdfhskjdfhkjsjahjdfh");
+        user2.setUsername("너너너");
+
+        messageListItems.add(new MessageListItem(new ChattingMessage("안녕하세요") , curUser));
+        messageListItems.add(new MessageListItem(new ChattingMessage("네 안녕하세요 반갑습니다.") , user2));
+        messageListItems.add(new MessageListItem(new ChattingMessage("성함이??") , curUser));
+        messageListItems.add(new MessageListItem(new ChattingMessage("홍길동 입니다.") , user2));
+
+
+        MessageListAdapter adapter = new MessageListAdapter(mContext , messageListItems);
+
+        LinearLayoutManager linearLayoutManager =new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager.setStackFromEnd(true);
+
+        listMessages.setHasFixedSize(true);
+        listMessages.setLayoutManager(linearLayoutManager);
+        listMessages.setAdapter(adapter);
     }
 }

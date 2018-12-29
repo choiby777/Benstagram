@@ -9,6 +9,7 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="link_blue">#3385ff</color>
+    <color name="sky">#95b2de</color>
     <color name="speech_bubble_user">#efe637</color>
     <color name="speech_bubble_agent">#ffffff</color>
 
